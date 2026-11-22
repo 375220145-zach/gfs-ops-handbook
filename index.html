@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en" data-artifact-profile="longform" data-viewport-strategy="desktop-only">
+<head>
+  <meta charset="utf-8">
+  <meta name="artifact:profile" content="longform">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GFS OPS · Downstream Hub Operations</title>
+  <style>:root {
+  color-scheme: light;
+  --ink: #1b231d;
+  --muted: #536055;
+  --paper: #fbfcf8;
+  --white: #fff;
+  --line: #dce1d7;
+  --wash: #eff3e9;
+  --green: #245637;
+  --green-soft: #e7efdf;
+  --cover: #141b16;
+  --lime: #d5f267;
+  --warning: #71501a;
+  --warning-bg: #f9f1dc;
+  --nav-height: 66px;
+  --font: "Avenir Next", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --display: "Arial Black", "Avenir Next", "Segoe UI Black", sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: calc(var(--nav-height) + 20px); }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font: 500 15px/1.62 var(--font);
+}
+a { color: inherit; }
+button, input { color: inherit; font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible, [tabindex="0"]:focus-visible {
+  outline: 2px solid #709640;
+  outline-offset: 4px;
+}
+.sr-only, .skip:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.skip:focus {
+  position: fixed;
+  z-index: 12;
+  top: 12px;
+  left: 12px;
+  background: var(--white);
+  padding: 8px 14px;
+}
+
+.top {
+  height: var(--nav-height);
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+.top-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1600px;
+  padding-inline: clamp(22px, 3.3vw, 54px);
+  margin-inline: auto;
+}
+.wordmark, .top-actions, .search-trigger, .languages {
+  display: flex;
+  align-items: center;
+}
+.wordmark {
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.wordmark:hover { text-decoration: underline; text-underline-offset: 4px; }
+.brand-mark {
+  width: 19px;
+  height: 19px;
+  display: inline-block;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 100% 22%, 22% 22%, 22% 40%, 82% 40%, 82% 62%, 22% 62%, 22% 100%, 0 100%);
+}
+.top-actions { gap: 18px; }
+.search-trigger {
+  width: clamp(210px, 21vw, 306px);
+  text-align: left;
+  gap: 10px;
+  min-height: 36px;
+  padding: 5px 8px 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 13px;
+}
+.search-trigger:hover { background: var(--wash); color: var(--ink); }
+.search-trigger kbd { margin-left: auto; }
+.search-icon {
+  flex: 0 0 auto;
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+.search-icon::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 1.5px;
+  background: currentColor;
+  right: -4px;
+  bottom: -2px;
+  transform: rotate(45deg);
+}
+kbd {
+  display: inline-block;
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--muted);
+  font: 500 11px/1.4 var(--mono);
+  padding: 1px 5px;
+}
+.languages {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.languages button {
+  white-space: nowrap;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 3px;
+  padding: 4px 8px;
+  min-height: 27px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.languages button:hover { color: var(--green); }
+.languages button[aria-pressed="true"] { background: var(--green-soft); color: var(--green); }
+.narrow-note { display: none; }
+
+body[data-view="cover"] { background: var(--cover); }
+body[data-view="cover"] .top {
+  color: #f4f6e9;
+  background: var(--cover);
+  border-color: #334133;
+}
+body[data-view="cover"] .brand-mark { color: var(--lime); }
+body[data-view="cover"] .top :is(.search-trigger, .languages) { border-color: #465343; }
+body[data-view="cover"] .search-trigger { background: #202a21; color: #e2e9db; }
+body[data-view="cover"] .search-trigger:hover { background: #2a392a; }
+body[data-view="cover"] .top kbd { border-color: #566254; background: #283428; color: #eff3e7; }
+body[data-view="cover"] .languages button { color: #e2e9db; }
+body[data-view="cover"] .languages button[aria-pressed="true"] { color: #18220e; background: var(--lime); }
+.cover {
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+  min-height: max(600px, calc(100dvh - var(--nav-height)));
+  display: grid;
+  align-items: center;
+  color: var(--lime);
+}
+.cover-inner {
+  width: min(100%, 1600px);
+  margin-inline: auto;
+  padding: 60px clamp(24px, 5.8vw, 100px) 66px;
+}
+.cover h1 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 46px;
+  font-family: var(--display);
+  font-weight: 950;
+  letter-spacing: -.072em;
+  line-height: .92;
+}
+.headline-line { display: block; overflow: clip; padding: 0 .09em .12em 0; }
+.headline-line > span { display: inline-block; animation: arrive 650ms cubic-bezier(.2,.82,.28,1) both; }
+.headline-line:first-child { font-size: clamp(36px, 7.1vw, 115px); color: #eef4dc; }
+.headline-gfs {
+  font-size: clamp(70px, 13.8vw, 238px);
+  text-align: right;
+  margin-top: .038em;
+}
+.headline-gfs > span { animation-delay: 120ms; }
+@keyframes arrive {
+  from { transform: translateY(112%); opacity: .25; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.route-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.route-art i {
+  --bend: 25%;
+  position: absolute;
+  left: 0;
+  top: calc(47% + var(--track) * 19px);
+  width: 100%;
+  height: 61%;
+  background: #314432;
+  clip-path: polygon(0 73%, var(--bend) 73%, 62% 2%, 100% 2%, 100% calc(2% + 1px),
+    62% calc(2% + 1px), var(--bend) calc(73% + 1px), 0 calc(73% + 1px));
+}
+.route-art i:nth-child(1) { --track: -2; background: #42593e; }
+.route-art i:nth-child(2) { --track: -1; }
+.route-art i:nth-child(3) { --track: 0; }
+.route-art i:nth-child(4) { --track: 1; background: #607a4c; }
+.route-art i:nth-child(5) { --track: 2; }
+.route-art i:nth-child(6) { --track: 3; }
+.enter {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+  text-decoration: none;
+  color: #192110;
+  background: var(--lime);
+  border: 1px solid var(--lime);
+  padding: 10px 14px 10px 17px;
+  min-height: 47px;
+  font-weight: 780;
+  font-size: 14px;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.arrow { display: inline-block; transition: transform 160ms ease; }
+.enter:hover { background: #eef4dc; border-color: #eef4dc; }
+.enter:hover .arrow { transform: translate(2px, -2px); }
+
+.manual {
+  display: grid;
+  grid-template-columns: 245px minmax(0, 790px) minmax(155px, 220px);
+  column-gap: clamp(25px, 3.4vw, 64px);
+  max-width: 1545px;
+  padding-inline: clamp(22px, 3.3vw, 54px);
+  margin-inline: auto;
+  min-height: calc(100dvh - var(--nav-height));
+}
+.rail, .page-rail {
+  min-width: 0;
+  position: sticky;
+  top: var(--nav-height);
+  align-self: start;
+  max-height: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.rail {
+  padding: 32px 17px 32px 0;
+  border-right: 1px solid var(--line);
+}
+.directory-title, .toc-title {
+  margin: 0 0 13px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.nav-group { border-top: 1px solid var(--line); }
+.nav-group:last-child { border-bottom: 1px solid var(--line); }
+.group-title {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 10px;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  color: var(--ink);
+  line-height: 1.45;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.group-title::-webkit-details-marker { display: none; }
+.group-title::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 140ms ease;
+  justify-self: center;
+}
+.nav-group[open] > .group-title::after { transform: translateY(-2px) rotate(45deg); }
+.group-title:hover { background: var(--wash); }
+.nav-group[data-current] > .group-title { color: var(--green); }
+.group-title .number { color: var(--muted); font: 500 11px/1 var(--mono); }
+.nav-group ol, .page-rail ol { list-style: none; padding: 0; margin: 0; }
+.nav-group ol { padding: 0 0 7px 8px; }
+.nav-link {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 5px 8px;
+  min-height: 31px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.nav-link:hover, .toc-link:hover { color: var(--ink); background: var(--wash); }
+.nav-link[aria-current="page"] { background: var(--green-soft); color: var(--green); font-weight: 760; }
+.nav-link .number { color: inherit; font: 500 11px/1 var(--mono); }
+.page-rail { padding: 35px 0 24px 0; }
+.toc-link {
+  display: block;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-left: -7px;
+  padding: 5px 7px;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.toc-link[aria-current="location"] { color: var(--green); background: var(--green-soft); font-weight: 720; }
+
+.document { padding: 39px 0 42px; min-width: 0; overflow-wrap: anywhere; }
+.breadcrumb {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--muted);
+  margin: 0 0 13px;
+  font-size: 13px;
+}
+.breadcrumb span:last-child { font-family: var(--mono); font-size: 12px; }
+.document h1 { font-size: clamp(30px, 3.05vw, 53px); line-height: 1.12; letter-spacing: -.05em; font-weight: 780; margin: 0 0 32px; }
+:lang(zh) .document h1 { letter-spacing: -.03em; }
+.content-block { position: relative; }
+.content-block + .content-block { border-top: 1px solid var(--line); }
+.content-block.intro { padding-bottom: 15px; }
+.content-block.intro:empty { display: none; }
+.content-block.step, .content-block.topic, .content-block.subtopic { padding: 16px 0 17px; }
+.content-block.step {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 13px;
+  scroll-margin-top: 12px;
+}
+.content-block[data-selected="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 2px -10px;
+  border-radius: 5px;
+  background: var(--green-soft);
+  z-index: -1;
+}
+.step-number {
+  display: block;
+  padding-top: 4px;
+  color: var(--green);
+  font: 650 13px/1.4 var(--mono);
+}
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.block-head :is(h2, h3) {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.43;
+  letter-spacing: -.018em;
+  font-weight: 770;
+}
+.content-block.topic .block-head h2 { font-size: 19px; }
+.content-block.subtopic { margin-inline-start: 18px; }
+.toc-subtopic { padding-inline-start: 18px; }
+.step-summary { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
+.operation {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  align-items: center;
+  padding: 3px 0 3px 5px;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 740;
+}
+.operation span:first-child { font-weight: 590; color: var(--muted); }
+.operation:hover span:nth-child(2) { text-decoration: underline; text-underline-offset: 3px; }
+.operation:hover .arrow { transform: translate(2px, -2px); }
+.prose { color: var(--ink); max-width: 75ch; line-height: 1.7; }
+.prose :is(p, ul, ol) { margin: 7px 0 13px; }
+.prose :is(ul, ol) { padding-left: 22px; }
+.prose li + li { margin-top: 5px; }
+.prose li > :is(p, ol, ul) { margin: 5px 0; }
+.prose a { color: var(--green); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.prose a:hover { color: var(--ink); }
+.prose code {
+  font: 500 .88em/1.5 var(--mono);
+  color: #234831;
+  background: #edf2e9;
+  padding: .14em .32em;
+  border-radius: 3px;
+  box-decoration-break: clone;
+}
+.prose img { max-width: 100%; height: auto; }
+.table-scroll { overflow-x: auto; max-width: 100%; margin: 9px 0 18px; }
+.prose table { text-align: left; width: 100%; border-collapse: collapse; font-size: 13px; }
+.prose :is(td, th) { border-bottom: 1px solid var(--line); vertical-align: top; padding: 9px 10px; }
+.prose th { color: var(--ink); font-weight: 760; background: var(--wash); }
+.prose td:first-child code { text-wrap: pretty; }
+.prose .important {
+  display: block;
+  margin-top: 6px;
+}
+.callout {
+  color: var(--warning);
+  background: var(--warning-bg);
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin: 8px 0 0;
+  font-size: 12.5px;
+}
+.callout strong { margin-right: 4px; }
+.pager {
+  border-top: 1px solid var(--line);
+  margin-top: 27px;
+  padding-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+.pager a { color: var(--green); font-size: 13px; font-weight: 680; text-decoration: none; }
+.pager a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pager a:last-child { margin-left: auto; text-align: right; }
+.no-script { margin: 16px; color: var(--muted); }
+
+dialog { color: var(--ink); padding: 0; border: 1px solid var(--line); background: var(--white); }
+dialog::backdrop { background: rgb(16 23 17 / 40%); }
+body:has(dialog[open]) { overflow: hidden; }
+.search-dialog {
+  width: min(640px, calc(100vw - 38px));
+  max-height: min(640px, calc(100dvh - 36px));
+  margin: min(14vh, 135px) auto auto;
+  border-radius: 10px;
+  box-shadow: 0 16px 55px rgb(16 23 17 / 20%);
+}
+.search-dialog[open] {
+  display: grid;
+  grid-template-rows: auto minmax(90px, 1fr) auto;
+  animation: pop-in 145ms ease-out both;
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(-7px) scale(.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+.search-field input {
+  padding: 4px 2px;
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.search-field input::-webkit-search-cancel-button { display: none; }
+.close {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-content: center;
+  border: 0;
+  border-radius: 5px;
+  color: var(--muted);
+  background: transparent;
+  font: normal 24px/1 var(--font);
+}
+.close:hover { background: var(--wash); color: var(--ink); }
+.results { min-height: 90px; padding: 7px; overflow: auto; }
+.result {
+  display: grid;
+  gap: 1px;
+  border-radius: 5px;
+  text-decoration: none;
+  padding: 8px 10px;
+}
+.result:is(:hover, [data-active="true"]) { background: var(--green-soft); }
+.result-title { font-weight: 760; font-size: 14px; }
+.result-path, .result-excerpt { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.result-excerpt { overflow-wrap: anywhere; }
+.result-excerpt mark { color: var(--green); background: transparent; font-weight: 790; }
+.search-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+.search-keys { white-space: nowrap; }
+.empty { padding: 12px; margin: 0; color: var(--muted); }
+.sheet {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(550px, 100vw);
+  height: 100dvh;
+  max-width: 100%;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid var(--line);
+}
+.sheet[data-operation="1-5/real-time-query"] { width: min(790px, 100vw); }
+.sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: slide-in 205ms cubic-bezier(.22,.8,.32,1) both; }
+@keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.sheet::backdrop { background: rgb(16 23 17 / 22%); }
+.sheet-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  border-bottom: 1px solid var(--line);
+  padding: 13px 20px;
+}
+.sheet-top p { color: var(--muted); margin: 0; font-size: 12.5px; }
+.sheet-content { padding: 24px 25px 42px; overflow: auto; }
+.sheet-content h2 { font-size: 27px; letter-spacing: -.03em; line-height: 1.2; margin: 0 0 14px; }
+.sheet-content h2:focus { outline: none; }
+.sheet-content .prose { font-size: 14px; }
+
+@media (max-width: 1180px) {
+  .manual { grid-template-columns: 225px minmax(0, 1fr) 146px; gap: 25px; }
+  .block-head { flex-wrap: wrap; gap: 1px 12px; }
+  .operation { padding-left: 0; }
+}
+@media (max-width: 1023px) {
+  .narrow-note {
+    display: block;
+    background: var(--wash);
+    color: var(--green);
+    border-bottom: 1px solid var(--line);
+    padding: 6px 15px;
+    font-size: 12px;
+  }
+  .manual { grid-template-columns: 200px minmax(0, 1fr); gap: 22px; }
+  .page-rail { display: none; }
+}
+@media (max-width: 650px) {
+  .top-inner { padding-inline: 13px; gap: 10px; }
+  .wordmark { font-size: 13px; gap: 6px; }
+  .brand-mark { width: 14px; height: 14px; }
+  .top-actions { gap: 7px; }
+  .search-trigger { width: auto; min-width: 34px; padding: 7px; justify-content: center; }
+  .search-trigger :is(kbd, [data-label]) { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+  .cover { min-height: max(390px, calc(100dvh - var(--nav-height) - 34px)); }
+  .cover-inner { padding-inline: 20px; }
+  .cover h1 { margin-bottom: 30px; }
+  .manual { display: flex; flex-direction: column; padding-inline: 14px; gap: 0; }
+  .rail { position: static; padding: 13px 0; max-height: 185px; width: 100%; border-right: 0; border-bottom: 1px solid var(--line); }
+  .directory-title { margin: 0 0 8px; }
+  .document { padding-top: 23px; }
+  .document h1 { margin-bottom: 19px; }
+  .content-block.step { grid-template-columns: 25px minmax(0, 1fr); gap: 7px; }
+  .block-head { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+@media print {
+  .top, .rail, .page-rail, .narrow-note, .pager, .operation, .skip, dialog, .route-art, .enter { display: none !important; }
+  body, body[data-view="cover"], .cover { background: white; color: black; }
+  .cover h1 span { color: black; }
+  .cover { min-height: auto; }
+  .manual { display: block; padding: 0; }
+  .document { padding: 0; }
+  .block-head { break-after: avoid; }
+  .prose tr, .callout { break-inside: avoid; }
+}
+
+.content-block { isolation: isolate; }
+.print-detail { display: none; }
+.key-check {
+  margin-top: 10px;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  background: var(--wash);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.key-check > strong { color: var(--green); }
+.key-check p { margin: 2px 0 0; }
+@media print {
+  .print-detail { display: block; }
+  .step-summary:has(+ .print-detail), .key-check { display: none; }
+}
+
+.sheet-content .prose > ol > li { padding-left: 3px; }
+.sheet-content .prose ol > li::marker { color: var(--green); font-weight: 700; }
+.sheet-next {
+  display: grid;
+  gap: 2px;
+  margin-top: 22px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+.sheet-next span { color: var(--muted); font-size: 12px; }
+.sheet-next strong { text-decoration: underline; text-underline-offset: 3px; }
+.document h1 { font-weight: 700; }
+.block-head h2, .sheet-content h2 { font-weight: 700; }
+</style>
+</head>
+<body data-view="cover">
+  <a class="skip" id="skip" href="#content" data-label="skip">Skip to content</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="wordmark" href="#home" aria-label="GFS OPS home">
+        <span class="brand-mark" aria-hidden="true"></span><span data-label="brand">Hub Operations</span>
+      </a>
+      <div class="top-actions">
+        <button class="search-trigger" id="search-trigger" type="button">
+          <span class="search-icon" aria-hidden="true"></span>
+          <span data-label="search">Search handbook</span>
+          <kbd id="search-key" aria-hidden="true">Ctrl K</kbd>
+        </button>
+        <div class="languages" role="group" aria-label="Language">
+          <button type="button" data-language="en" aria-label="English" aria-pressed="true">EN</button>
+          <button type="button" data-language="zh" aria-label="中文" aria-pressed="false">中文</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="narrow-note" data-desktop-only-notice data-label="narrow">Desktop preview · Open on a computer for the full layout.</div>
+
+  <main id="content" tabindex="-1">
+    <section id="cover" class="cover">
+      <div class="route-art" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <div class="cover-inner">
+        <h1 lang="en">
+          <span class="headline-line"><span>INTO WHAT WE KNOW</span></span>
+          <span class="headline-line headline-gfs"><span>GFS OPS</span></span>
+        </h1>
+        <a class="enter" href="#2-1"><span data-label="enter">Open handbook</span><span class="arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+    <div class="manual" id="manual" hidden>
+      <aside class="rail">
+        <nav id="directory" aria-label="Handbook contents"></nav>
+      </aside>
+      <article class="document" id="document"></article>
+      <aside class="page-rail" id="page-rail" hidden>
+        <nav id="page-links" aria-label="On this page"></nav>
+      </aside>
+    </div>
+    <noscript><p class="no-script">Open this file in a browser with JavaScript enabled to read the handbook.</p></noscript>
+  </main>
+
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <h2 id="search-title" class="sr-only" data-label="search">Search handbook</h2>
+    <div class="search-field">
+      <span class="search-icon" aria-hidden="true"></span>
+      <input id="query" type="search" aria-label="Search handbook" aria-controls="results" placeholder="Search steps, statuses or issues…" autocomplete="off" spellcheck="false">
+      <button type="button" class="close" data-close="search" aria-label="Close search">×</button>
+    </div>
+    <div id="results" class="results" role="region" aria-label="Search results"></div>
+    <div class="search-footer">
+      <span id="result-status" role="status"></span>
+      <span class="search-keys"><kbd>↑</kbd><kbd>↓</kbd> <span data-label="move">Navigate</span> <kbd>↵</kbd> <span data-label="open">Open</span></span>
+    </div>
+  </dialog>
+
+  <dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
+    <div class="sheet-top">
+      <p id="sheet-path"></p>
+      <button type="button" class="close" data-close="sheet" aria-label="Close instructions">×</button>
+    </div>
+    <div class="sheet-content">
+      <h2 id="sheet-title"></h2>
+      <div id="sheet-body" class="prose"></div>
+    </div>
+  </dialog>
+
+  <script type="application/json" id="handbook-data">{"parts":[{"id":"1","title":{"zh":"背景","en":"Background"},"pages":["1-1","1-2","1-3","1-4","1-5"]},{"id":"2","title":{"zh":"派送","en":"Delivery Operations"},"pages":["2-1","2-2","2-3","2-4","2-5"]},{"id":"3","title":{"zh":"盘点与客诉","en":"Stock Counts and Customer Complaints"},"pages":["3-1","3-2"]},{"id":"4","title":{"zh":"司机","en":"Drivers"},"pages":["4-1","4-2","4-3","4-4"]},{"id":"5","title":{"zh":"每日／每周汇报","en":"Daily and Weekly Reports"},"pages":["5-1","5-2","5-3","5-4"]}],"pages":[{"id":"1-1","title":{"en":"Customers and Operating Model","zh":"客户与业务模式"},"part":"1","blocks":[{"id":"1-1","kind":"intro","title":{"en":"Customers and Operating Model","zh":"客户与业务模式"},"ordinal":"","body":{"en":"\u003cp>GFS operates in Saudi Arabia, Georgia, Oman, Qatar, Kuwait and Bahrain.\u003cbr />\nGFS developed its South African operations as a new line of business in 2025.\u003c/p>\n\u003cp>Temu is currently our largest customer, and we also handle some shipments for Waylink, Fordeal, Dealfy and AliExpress.\u003cbr />\nPPD is the main operating model in South Africa.\u003c/p>\n\u003cp>The sorting centre is in Johannesburg (JHB) and sends parcels to downstream hubs.\u003cbr />\nDownstream hubs are mainly responsible for last-mile delivery.\u003c/p>\n","zh":"\u003cp>GFS 在沙特阿拉伯、格鲁吉亚、阿曼、卡塔尔、科威特和巴林均有业务。\u003cbr />\n南非业务是 GFS 在 2025 年新开发的业务线。\u003c/p>\n\u003cp>目前，Temu 是我们最大的客户，我们也承接部分 Waylink、Fordeal、Dealfy 和 AliExpress 的业务。\u003cbr />\n南非业务主要采用 PPD 模式。\u003c/p>\n\u003cp>南非分拨中心位于约翰内斯堡（下文简称“约堡”），负责向下游站点发送包裹。\u003cbr />\n下游站点主要负责包裹的尾程派送。\u003c/p>\n"},"summary":{"en":"GFS operates in Saudi Arabia, Georgia, Oman, Qatar, Kuwait and Bahrain.","zh":"GFS 在沙特阿拉伯、格鲁吉亚、阿曼、卡塔尔、科威特和巴林均有业务。"},"plain":{"en":"GFS operates in Saudi Arabia, Georgia, Oman, Qatar, Kuwait and Bahrain. GFS developed its South African operations as a new line of business in 2025. Temu is currently our largest customer, and we also handle some shipments for Waylink, Fordeal, Dealfy and AliExpress. PPD is the main operating model in South Africa. The sorting centre is in Johannesburg (JHB) and sends parcels to downstream hubs. Downstream hubs are mainly responsible for last-mile delivery.","zh":"GFS 在沙特阿拉伯、格鲁吉亚、阿曼、卡塔尔、科威特和巴林均有业务。 南非业务是 GFS 在 2025 年新开发的业务线。 目前，Temu 是我们最大的客户，我们也承接部分 Waylink、Fordeal、Dealfy 和 AliExpress 的业务。 南非业务主要采用 PPD 模式。 南非分拨中心位于约翰内斯堡（下文简称“约堡”），负责向下游站点发送包裹。 下游站点主要负责包裹的尾程派送。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"1-2","title":{"en":"Parcel Flow from Clearance to Delivery","zh":"正向业务链路"},"part":"1","blocks":[{"id":"1-2","kind":"intro","title":{"en":"Parcel Flow from Clearance to Delivery","zh":"正向业务链路"},"ordinal":"","body":{"en":"\u003cp>Customs clearance → arrival at the JHB sorting centre → sorting at JHB → linehaul to the downstream hub → hub inbound scan → hub sorting → out for delivery → delivery confirmation.\u003c/p>\n","zh":"\u003cp>清关完成 → 到达约堡分拨仓 → 约堡仓分拣 → 干线运输至下游站点 → 下游站点入库 → 下游站点分拣 → 出派 → 签收。\u003c/p>\n"},"summary":{"en":"Customs clearance → arrival at the JHB sorting centre → sorting at JHB → linehaul to the downstream hub → hub inbound scan → hub sorting → out for delivery → delivery confirmation.","zh":"清关完成 → 到达约堡分拨仓 → 约堡仓分拣 → 干线运输至下游站点 → 下游站点入库 → 下游站点分拣 → 出派 → 签收。"},"plain":{"en":"Customs clearance → arrival at the JHB sorting centre → sorting at JHB → linehaul to the downstream hub → hub inbound scan → hub sorting → out for delivery → delivery confirmation.","zh":"清关完成 → 到达约堡分拨仓 → 约堡仓分拣 → 干线运输至下游站点 → 下游站点入库 → 下游站点分拣 → 出派 → 签收。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"1-3","title":{"en":"Systems and Tools","zh":"常用系统与工具"},"part":"1","blocks":[{"id":"1-3","kind":"intro","title":{"en":"Systems and Tools","zh":"常用系统与工具"},"ordinal":"","body":{"en":"\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>System or tool\u003c/th>\n  \u003cth>Main uses in this workflow\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>Puppis system\u003c/td>\n  \u003ctd>Confirm inbound, check parcel statuses and review inbound discrepancies.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>Warehouse app / PDA\u003c/td>\n  \u003ctd>Record truck arrivals, scan and sort inbound parcels, dispatch parcels to drivers, and receive undelivered parcels back into the warehouse.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>Driver app\u003c/td>\n  \u003ctd>Accept tasks, view parcels awaiting delivery, send OTPs, contact customers, and record successful or unsuccessful deliveries.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n","zh":"\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>系统或工具\u003c/th>\n  \u003cth>本流程中的主要用途\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>Puppis 系统\u003c/td>\n  \u003ctd>完成入库确认，查看包裹状态，检查入库差异。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>仓库 APP / PDA\u003c/td>\n  \u003ctd>到车处理、包裹入库与分拣、Dispatch，以及未签收包裹返仓后的入库。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>司机 APP\u003c/td>\n  \u003ctd>接收任务、查看待派送包裹、发送 OTP、联系客户，以及更新签收或未签收结果。\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n"},"summary":{"en":"| System or tool | Main uses in this workflow |","zh":"| 系统或工具 | 本流程中的主要用途 |"},"plain":{"en":"System or tool Main uses in this workflow Puppis system Confirm inbound, check parcel statuses and review inbound discrepancies. Warehouse app / PDA Record truck arrivals, scan and sort inbound parcels, dispatch parcels to drivers, and receive undelivered parcels back into the warehouse. Driver app Accept tasks, view parcels awaiting delivery, send OTPs, contact customers, and record successful or unsuccessful deliveries.","zh":"系统或工具 本流程中的主要用途 Puppis 系统 完成入库确认，查看包裹状态，检查入库差异。 仓库 APP / PDA 到车处理、包裹入库与分拣、Dispatch，以及未签收包裹返仓后的入库。 司机 APP 接收任务、查看待派送包裹、发送 OTP、联系客户，以及更新签收或未签收结果。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"1-4","title":{"en":"Hub Team Roles","zh":"站点人员配置"},"part":"1","blocks":[{"id":"1-4","kind":"intro","title":{"en":"Hub Team Roles","zh":"站点人员配置"},"ordinal":"","body":{"en":"\u003cp>A downstream hub typically has a supervisor, team leaders, warehouse operators and freelance delivery drivers.\u003c/p>\n","zh":"\u003cp>一般下游站点配有主管（Supervisor）、组长（Team Leader）、操作员（Operator）及派送司机（Freelancer）。\u003c/p>\n"},"summary":{"en":"A downstream hub typically has a supervisor, team leaders, warehouse operators and freelance delivery drivers.","zh":"一般下游站点配有主管（Supervisor）、组长（Team Leader）、操作员（Operator）及派送司机（Freelancer）。"},"plain":{"en":"A downstream hub typically has a supervisor, team leaders, warehouse operators and freelance delivery drivers.","zh":"一般下游站点配有主管（Supervisor）、组长（Team Leader）、操作员（Operator）及派送司机（Freelancer）。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"1-5","title":{"en":"Common Puppis Modules","zh":"Puppis 常用模块"},"part":"1","blocks":[{"id":"1-5","kind":"intro","title":{"en":"Common Puppis Modules","zh":"Puppis 常用模块"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/work-order-system","kind":"topic","title":{"en":"Work Order System","zh":"Work Order System"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>Complaint Task\u003c/code> · \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>Complaint Task\u003c/code> · \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/p>\n"},"summary":{"en":"Complaint Task · Package Exception Task (Dispatch)","zh":"Complaint Task · Package Exception Task (Dispatch)"},"plain":{"en":"Complaint Task · Package Exception Task (Dispatch)","zh":"Complaint Task · Package Exception Task (Dispatch)"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/package","kind":"topic","title":{"en":"Package","zh":"Package"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/real-time-query","kind":"subtopic","title":{"en":"Real Time Query","zh":"Real Time Query"},"ordinal":"","body":{"en":"\u003cp>Puppis → \u003ccode>Package\u003c/code> → \u003ccode>Real Time Query\u003c/code>\u003c/p>\n\u003cp>Check the parcel's current status and use the table below to interpret it.\u003c/p>\n\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>Package status\u003c/th>\n  \u003cth>What it means\u003c/th>\n  \u003cth>How the status is set\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>\u003ccode>CREATE\u003c/code>\u003c/td>\n  \u003ctd>The shipper has created the shipment.\u003c/td>\n  \u003ctd>The system sets this status when the shipper creates the waybill.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>COLLECT\u003c/code>\u003c/td>\n  \u003ctd>The parcel has been collected from the shipper's warehouse.\u003c/td>\n  \u003ctd>Scan the parcel using \u003ccode>Arrive Sort\u003c/code>.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>INBOUND\u003c/code>\u003c/td>\n  \u003ctd>The parcel has been scanned into the hub on arrival or on return.\u003c/td>\n  \u003ctd>1. Use \u003ccode>Arrive Sort\u003c/code> for new parcels where applicable.\u003cbr>2. For parcels loaded from another hub to this hub, scan with \u003ccode>Sort Common\u003c/code> or \u003ccode>Sort Delivery\u003c/code>.\u003cbr>3. For returned parcels in \u003ccode>DISPATCH\u003c/code> or \u003ccode>NOT_SIGNED\u003c/code>, scan with \u003ccode>Sort Common\u003c/code> or \u003ccode>Sort Delivery\u003c/code>.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>LOAD\u003c/code>\u003c/td>\n  \u003ctd>The system has recorded the parcel for transfer to another hub.\u003c/td>\n  \u003ctd>Scan the parcel using \u003ccode>Quick Tpl - Load\u003c/code>.\u003cbr>See section \u003ca href=\"#2-4\">2-4\u003c/a> for the physical handover.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>DISPATCH\u003c/code>\u003c/td>\n  \u003ctd>The parcel has been assigned to a driver.\u003c/td>\n  \u003ctd>Scan the parcel with \u003ccode>Dispatch\u003c/code> to assign it to the driver.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>OFD\u003c/code>\u003c/td>\n  \u003ctd>The driver has accepted the parcel and the system has marked it as out for delivery.\u003c/td>\n  \u003ctd>The driver scans or confirms receipt of the parcel in \u003ccode>Get Task\u003c/code>.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>NOT_SIGNED\u003c/code>\u003c/td>\n  \u003ctd>The delivery attempt was unsuccessful.\u003c/td>\n  \u003ctd>The driver selects the applicable failure reason on the \u003ccode>Not Sign\u003c/code> page.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>SIGN\u003c/code>\u003c/td>\n  \u003ctd>The system has recorded the parcel as delivered.\u003c/td>\n  \u003ctd>The driver selects \u003ccode>Signed\u003c/code> in the driver app.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>RTO_CONFIRM\u003c/code>\u003c/td>\n  \u003ctd>The return parcel has been received into the original hub and is ready for return to the shipper.\u003c/td>\n  \u003ctd>The return parcel is scanned into the original hub.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>RTO_SIGN\u003c/code>\u003c/td>\n  \u003ctd>The return has been signed off in the last-mile system.\u003cbr>To verify handover back to the shipper, check the \u003ccode>Outbound\u003c/code> record in \u003ccode>RTV Package\u003c/code>.\u003c/td>\n  \u003ctd>The status is recorded after an \u003ccode>RTO_SIGN\u003c/code> scan or generated by the applicable return receiving process.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>CANCELED\u003c/code>\u003c/td>\n  \u003ctd>The shipper has cancelled the shipment.\u003c/td>\n  \u003ctd>The shipper submits a cancellation instruction.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>LOST\u003c/code>\u003c/td>\n  \u003ctd>The parcel has been marked as lost in the system.\u003c/td>\n  \u003ctd>Once the loss is verified, an authorised user selects \u003ccode>Mark Lost\u003c/code>.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n","zh":"\u003cp>Puppis → \u003ccode>Package\u003c/code> → \u003ccode>Real Time Query\u003c/code>\u003c/p>\n\u003cp>查看包裹当前状态，状态含义见下表。\u003c/p>\n\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>包裹状态\u003c/th>\n  \u003cth>状态含义\u003c/th>\n  \u003cth>如何进入该状态\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>\u003ccode>CREATE\u003c/code>\u003c/td>\n  \u003ctd>货主已建单。\u003c/td>\n  \u003ctd>货主侧创建运单后生成。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>COLLECT\u003c/code>\u003c/td>\n  \u003ctd>已从货主仓揽收包裹。\u003c/td>\n  \u003ctd>用 \u003ccode>Arrive Sort\u003c/code> 扫描包裹。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>INBOUND\u003c/code>\u003c/td>\n  \u003ctd>包裹已在站点完成到站或返仓入库。\u003c/td>\n  \u003ctd>1. 适用 \u003ccode>Arrive Sort\u003c/code> 的新件用该功能扫描。\u003cbr>2. 从其他站点已 Load 到本站的包裹，用 \u003ccode>Sort Common\u003c/code> 或 \u003ccode>Sort Delivery\u003c/code> 扫描。\u003cbr>3. 对处于 \u003ccode>DISPATCH\u003c/code> 或 \u003ccode>NOT_SIGNED\u003c/code> 状态的返仓包裹，用 \u003ccode>Sort Common\u003c/code> 或 \u003ccode>Sort Delivery\u003c/code> 扫描。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>LOAD\u003c/code>\u003c/td>\n  \u003ctd>系统已记录包裹转往另一站点。\u003c/td>\n  \u003ctd>用 \u003ccode>Quick Tpl - Load\u003c/code> 扫描包裹。\u003cbr>跨站转运的实物交接参见 \u003ca href=\"#2-4\">2-4\u003c/a>。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>DISPATCH\u003c/code>\u003c/td>\n  \u003ctd>包裹已分配给司机。\u003c/td>\n  \u003ctd>用 \u003ccode>Dispatch\u003c/code> 扫描分配给对应司机。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>OFD\u003c/code>\u003c/td>\n  \u003ctd>司机已领取包裹，系统将其标为出派。\u003c/td>\n  \u003ctd>司机在 \u003ccode>Get Task\u003c/code> 扫描或确认接收包裹。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>NOT_SIGNED\u003c/code>\u003c/td>\n  \u003ctd>本次派送未成功。\u003c/td>\n  \u003ctd>司机在 \u003ccode>Not Sign\u003c/code> 页面选择对应的派送失败原因。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>SIGN\u003c/code>\u003c/td>\n  \u003ctd>系统已记录包裹签收。\u003c/td>\n  \u003ctd>司机在司机 App 选 \u003ccode>Signed\u003c/code>。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>RTO_CONFIRM\u003c/code>\u003c/td>\n  \u003ctd>退运包裹已在原始 Hub 入库，准备退回货主。\u003c/td>\n  \u003ctd>退运包裹在原始 Hub 完成入库。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>RTO_SIGN\u003c/code>\u003c/td>\n  \u003ctd>末派侧退运已签收。\u003cbr>核实是否已退给货主时，查 \u003ccode>RTV Package\u003c/code> 的 \u003ccode>Outbound\u003c/code> 记录。\u003c/td>\n  \u003ctd>退运包裹完成 \u003ccode>RTO_SIGN\u003c/code> 扫描，或由对应退运入库流程生成该状态。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>CANCELED\u003c/code>\u003c/td>\n  \u003ctd>货主已取消运单。\u003c/td>\n  \u003ctd>货主侧发出取消指令。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>LOST\u003c/code>\u003c/td>\n  \u003ctd>包裹已在系统中标记为丢失。\u003c/td>\n  \u003ctd>核实丢失后，由有权限的人员用 \u003ccode>Mark Lost\u003c/code> 标记。\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n"},"summary":{"en":"Puppis → Package → Real Time Query","zh":"Puppis → Package → Real Time Query"},"plain":{"en":"Puppis → Package → Real Time Query Check the parcel's current status and use the table below to interpret it. Package status What it means How the status is set CREATE The shipper has created the shipment. The system sets this status when the shipper creates the waybill. COLLECT The parcel has been collected from the shipper's warehouse. Scan the parcel using Arrive Sort. INBOUND The parcel has been scanned into the hub on arrival or on return. 1. Use Arrive Sort for new parcels where applicable. 2. For parcels loaded from another hub to this hub, scan with Sort Common or Sort Delivery. 3. For returned parcels in DISPATCH or NOT_SIGNED, scan with Sort Common or Sort Delivery. LOAD The system has recorded the parcel for transfer to another hub. Scan the parcel using Quick Tpl - Load. See section 2-4 for the physical handover. DISPATCH The parcel has been assigned to a driver. Scan the parcel with Dispatch to assign it to the driver. OFD The driver has accepted the parcel and the system has marked it as out for delivery. The driver scans or confirms receipt of the parcel in Get Task. NOT_SIGNED The delivery attempt was unsuccessful. The driver selects the applicable failure reason on the Not Sign page. SIGN The system has recorded the parcel as delivered. The driver selects Signed in the driver app. RTO_CONFIRM The return parcel has been received into the original hub and is ready for return to the shipper. The return parcel is scanned into the original hub. RTO_SIGN The return has been signed off in the last-mile system. To verify handover back to the shipper, check the Outbound record in RTV Package. The status is recorded after an RTO_SIGN scan or generated by the applicable return receiving process. CANCELED The shipper has cancelled the shipment. The shipper submits a cancellation instruction. LOST The parcel has been marked as lost in the system. Once the loss is verified, an authorised user selects Mark Lost.","zh":"Puppis → Package → Real Time Query 查看包裹当前状态，状态含义见下表。 包裹状态 状态含义 如何进入该状态 CREATE 货主已建单。 货主侧创建运单后生成。 COLLECT 已从货主仓揽收包裹。 用 Arrive Sort 扫描包裹。 INBOUND 包裹已在站点完成到站或返仓入库。 1. 适用 Arrive Sort 的新件用该功能扫描。 2. 从其他站点已 Load 到本站的包裹，用 Sort Common 或 Sort Delivery 扫描。 3. 对处于 DISPATCH 或 NOT_SIGNED 状态的返仓包裹，用 Sort Common 或 Sort Delivery 扫描。 LOAD 系统已记录包裹转往另一站点。 用 Quick Tpl - Load 扫描包裹。 跨站转运的实物交接参见 2-4。 DISPATCH 包裹已分配给司机。 用 Dispatch 扫描分配给对应司机。 OFD 司机已领取包裹，系统将其标为出派。 司机在 Get Task 扫描或确认接收包裹。 NOT_SIGNED 本次派送未成功。 司机在 Not Sign 页面选择对应的派送失败原因。 SIGN 系统已记录包裹签收。 司机在司机 App 选 Signed。 RTO_CONFIRM 退运包裹已在原始 Hub 入库，准备退回货主。 退运包裹在原始 Hub 完成入库。 RTO_SIGN 末派侧退运已签收。 核实是否已退给货主时，查 RTV Package 的 Outbound 记录。 退运包裹完成 RTO_SIGN 扫描，或由对应退运入库流程生成该状态。 CANCELED 货主已取消运单。 货主侧发出取消指令。 LOST 包裹已在系统中标记为丢失。 核实丢失后，由有权限的人员用 Mark Lost 标记。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":["shipment status","tracking status","package status","状态码","物流状态","包裹状态说明"]},{"id":"1-5/daily-monitor","kind":"topic","title":{"en":"Daily Monitor","zh":"Daily Monitor"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>OFD Monitor-Hub\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>OFD Monitor-Hub\u003c/code>\u003c/p>\n"},"summary":{"en":"OFD Monitor-Hub","zh":"OFD Monitor-Hub"},"plain":{"en":"OFD Monitor-Hub","zh":"OFD Monitor-Hub"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/warehouse","kind":"topic","title":{"en":"Warehouse","zh":"Warehouse"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>Reservation Order-Hub\u003c/code> · \u003ccode>Stock\u003c/code> · \u003ccode>Stock Count Plan\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>Reservation Order-Hub\u003c/code> · \u003ccode>Stock\u003c/code> · \u003ccode>Stock Count Plan\u003c/code>\u003c/p>\n"},"summary":{"en":"Reservation Order-Hub · Stock · Stock Count Plan","zh":"Reservation Order-Hub · Stock · Stock Count Plan"},"plain":{"en":"Reservation Order-Hub · Stock · Stock Count Plan","zh":"Reservation Order-Hub · Stock · Stock Count Plan"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/task","kind":"topic","title":{"en":"Task","zh":"Task"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>OFD list-hub\u003c/code> · \u003ccode>Financial\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>OFD list-hub\u003c/code> · \u003ccode>Financial\u003c/code>\u003c/p>\n"},"summary":{"en":"OFD list-hub · Financial","zh":"OFD list-hub · Financial"},"plain":{"en":"OFD list-hub · Financial","zh":"OFD list-hub · Financial"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/transport","kind":"topic","title":{"en":"Transport","zh":"Transport"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>Arrival Inbound-Hub\u003c/code> · \u003ccode>Container\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>Arrival Inbound-Hub\u003c/code> · \u003ccode>Container\u003c/code>\u003c/p>\n"},"summary":{"en":"Arrival Inbound-Hub · Container","zh":"Arrival Inbound-Hub · Container"},"plain":{"en":"Arrival Inbound-Hub · Container","zh":"Arrival Inbound-Hub · Container"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"1-5/basic","kind":"topic","title":{"en":"Basic","zh":"Basic"},"ordinal":"","body":{"en":"\u003cp>\u003ccode>Download Center\u003c/code> · \u003ccode>Employee\u003c/code>\u003c/p>\n","zh":"\u003cp>\u003ccode>Download Center\u003c/code> · \u003ccode>Employee\u003c/code>\u003c/p>\n"},"summary":{"en":"Download Center · Employee","zh":"Download Center · Employee"},"plain":{"en":"Download Center · Employee","zh":"Download Center · Employee"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"2-1","title":{"en":"Receiving a Linehaul Shipment","zh":"干线到仓"},"part":"2","blocks":[{"id":"2-1","kind":"intro","title":{"en":"Receiving a Linehaul Shipment","zh":"干线到仓"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["truck at depot","line haul arrival","linehaul receiving","干线到站"]},{"id":"2-1/step-1","kind":"step","title":{"en":"Check and Record the Truck Arrival on the PDA","zh":"到车核对与PDA到车操作"},"ordinal":"1","body":{"en":"\u003cp>When the linehaul truck arrives, verify the transport order, vehicle registration and actual box count.\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Transport\u003c/code> → \u003ccode>To Arrival\u003c/code>\u003c/li>\n\u003cli>Enter the actual number of boxes received, then take and upload a photo.\u003c/li>\n\u003cli>Tap \u003ccode>Confirm Arrival\u003c/code> to complete the truck arrival record on the PDA.\u003c/li>\n\u003c/ol>\n","zh":"\u003cp>干线车辆到达后，核对运输单、车牌及实际箱数。\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Transport\u003c/code> → \u003ccode>To Arrival\u003c/code>\u003c/li>\n\u003cli>填写实际到达的箱数（Box），拍照并上传。\u003c/li>\n\u003cli>点击 \u003ccode>Confirm Arrival\u003c/code>，完成 PDA 到车登记。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"When the linehaul truck arrives, verify the transport order, vehicle registration and actual box count.","zh":"干线车辆到达后，核对运输单、车牌及实际箱数。"},"plain":{"en":"When the linehaul truck arrives, verify the transport order, vehicle registration and actual box count. PDA → Transport → To Arrival Enter the actual number of boxes received, then take and upload a photo. Tap Confirm Arrival to complete the truck arrival record on the PDA.","zh":"干线车辆到达后，核对运输单、车牌及实际箱数。 PDA → Transport → To Arrival 填写实际到达的箱数（Box），拍照并上传。 点击 Confirm Arrival，完成 PDA 到车登记。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":["arrival inbound","to arrival","truck check in","到车登记"]},{"id":"2-1/step-2","kind":"step","title":{"en":"Unload and Open the Boxes","zh":"卸货与拆箱"},"ordinal":"2","body":{"en":"\u003cp>Unload the shipment into the warehouse, open the outer boxes and place the parcels in the shared staging area.\u003c/p>\n","zh":"\u003cp>将货物卸至仓内，拆开外包装箱，将包裹放到集中处理区。\u003c/p>\n"},"summary":{"en":"Unload the shipment into the warehouse, open the outer boxes and place the parcels in the shared staging area.","zh":"将货物卸至仓内，拆开外包装箱，将包裹放到集中处理区。"},"plain":{"en":"Unload the shipment into the warehouse, open the outer boxes and place the parcels in the shared staging area.","zh":"将货物卸至仓内，拆开外包装箱，将包裹放到集中处理区。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-1/step-3","kind":"step","title":{"en":"Scan and Sort the Parcels","zh":"扫描与分拣"},"ordinal":"3","body":{"en":"\u003col>\n\u003cli>PDA → \u003ccode>Sort Common\u003c/code>. Scan the parcel.\u003c/li>\n\u003cli>In this workflow, scanning records the parcel as \u003ccode>INBOUND\u003c/code> and the PDA shows what to do next.\u003c/li>\n\u003cli>For zone sorting, use \u003ccode>Sort Delivery\u003c/code> to check the parcel's Zone.\u003c/li>\n\u003cli>Place the parcel in the indicated zone.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>PDA → \u003ccode>Sort Common\u003c/code>，扫描包裹。\u003c/li>\n\u003cli>在本流程中，扫描会自动记录包裹入库（\u003ccode>INBOUND\u003c/code>），PDA 会提示下一步该怎么操作。\u003c/li>\n\u003cli>如需按分区分拣，使用 \u003ccode>Sort Delivery\u003c/code> 查看包裹的 Zone。\u003c/li>\n\u003cli>将包裹放到对应区域。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"PDA → Sort Common. Scan the parcel.","zh":"PDA → Sort Common，扫描包裹。"},"plain":{"en":"PDA → Sort Common. Scan the parcel. In this workflow, scanning records the parcel as INBOUND and the PDA shows what to do next. For zone sorting, use Sort Delivery to check the parcel's Zone. Place the parcel in the indicated zone.","zh":"PDA → Sort Common，扫描包裹。 在本流程中，扫描会自动记录包裹入库（INBOUND），PDA 会提示下一步该怎么操作。 如需按分区分拣，使用 Sort Delivery 查看包裹的 Zone。 将包裹放到对应区域。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-1/step-4","kind":"step","title":{"en":"Confirm Inbound in the System","zh":"完成系统入库确认"},"ordinal":"4","body":{"en":"\u003col>\n\u003cli>Finish scanning and sorting the parcels physically received in this shipment.\u003c/li>\n\u003cli>Puppis → \u003ccode>Transport\u003c/code> → \u003ccode>Arrival Inbound-Hub\u003c/code>\u003c/li>\n\u003cli>Check the shipment. Once all parcels physically received have been scanned in, click \u003ccode>Inbound Confirm\u003c/code>.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Important\u003c/strong>\u003c/p>\n\u003cp>The system may show \u003ccode>Misrouted Inbound Count\u003c/code> or \u003ccode>Missing Package Count\u003c/code>. Confirm once all parcels physically received have been scanned in, then follow Step 5 for inbound discrepancies.\u003c/p>\n","zh":"\u003col>\n\u003cli>完成本批现场包裹的扫描入库和分拣。\u003c/li>\n\u003cli>Puppis → \u003ccode>Transport\u003c/code> → \u003ccode>Arrival Inbound-Hub\u003c/code>\u003c/li>\n\u003cli>核对本批到货，确认现场收到的包裹均已入库后，点击 \u003ccode>Inbound Confirm\u003c/code>。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>本步注意\u003c/strong>\u003c/p>\n\u003cp>系统可能显示 \u003ccode>Misrouted Inbound Count\u003c/code>（错发入库件数）或 \u003ccode>Missing Package Count\u003c/code>（缺件数）。现场收到的包裹全部入库后即可确认，入库差异见步骤 5。\u003c/p>\n"},"summary":{"en":"Finish scanning and sorting the parcels physically received in this shipment.","zh":"完成本批现场包裹的扫描入库和分拣。"},"plain":{"en":"Finish scanning and sorting the parcels physically received in this shipment. Puppis → Transport → Arrival Inbound-Hub Check the shipment. Once all parcels physically received have been scanned in, click Inbound Confirm. Important The system may show Misrouted Inbound Count or Missing Package Count. Confirm once all parcels physically received have been scanned in, then follow Step 5 for inbound discrepancies.","zh":"完成本批现场包裹的扫描入库和分拣。 Puppis → Transport → Arrival Inbound-Hub 核对本批到货，确认现场收到的包裹均已入库后，点击 Inbound Confirm。 本步注意 系统可能显示 Misrouted Inbound Count（错发入库件数）或 Missing Package Count（缺件数）。现场收到的包裹全部入库后即可确认，入库差异见步骤 5。"},"operation":"Puppis","review":null,"keyCheck":{"en":"\u003cp>The system may show \u003ccode>Misrouted Inbound Count\u003c/code> or \u003ccode>Missing Package Count\u003c/code>. Confirm once all parcels physically received have been scanned in, then follow Step 5 for inbound discrepancies.\u003c/p>\n","zh":"\u003cp>系统可能显示 \u003ccode>Misrouted Inbound Count\u003c/code>（错发入库件数）或 \u003ccode>Missing Package Count\u003c/code>（缺件数）。现场收到的包裹全部入库后即可确认，入库差异见步骤 5。\u003c/p>\n"},"aliases":["inbound confirm","arrival inbound confirm","到货确认"]},{"id":"2-1/step-5","kind":"step","title":{"en":"Check for Inbound Discrepancies","zh":"检查入库差异"},"ordinal":"5","body":{"en":"\u003col>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/li>\n\u003cli>Select the relevant exception type in \u003ccode>WorkOrderBizType\u003c/code> and set \u003ccode>Create Date\u003c/code>.\u003c/li>\n\u003cli>Click \u003ccode>Query\u003c/code> to find work orders in \u003ccode>Processing\u003c/code> and follow up on each one.\u003c/li>\n\u003c/ol>\n\u003cp>Check for parcels flagged as \u003ccode>Load Miss Inbound\u003c/code>. Report any that remain flagged for a long time in the group chat and keep following them up.\u003c/p>\n","zh":"\u003col>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/li>\n\u003cli>在 \u003ccode>WorkOrderBizType\u003c/code> 选择要处理的异常类型，并设置 \u003ccode>Create Date\u003c/code>。\u003c/li>\n\u003cli>点击 \u003ccode>Query\u003c/code>，查看状态为 \u003ccode>Processing\u003c/code> 的工单，并逐单处理。\u003c/li>\n\u003c/ol>\n\u003cp>留意 \u003ccode>Load Miss Inbound\u003c/code> 包裹。长时间仍未入库的包裹，需要在群内汇报并继续跟进。\u003c/p>\n"},"summary":{"en":"Puppis → Work Order System → Package Exception Task (Dispatch)","zh":"Puppis → Work Order System → Package Exception Task (Dispatch)"},"plain":{"en":"Puppis → Work Order System → Package Exception Task (Dispatch) Select the relevant exception type in WorkOrderBizType and set Create Date. Click Query to find work orders in Processing and follow up on each one. Check for parcels flagged as Load Miss Inbound. Report any that remain flagged for a long time in the group chat and keep following them up.","zh":"Puppis → Work Order System → Package Exception Task (Dispatch) 在 WorkOrderBizType 选择要处理的异常类型，并设置 Create Date。 点击 Query，查看状态为 Processing 的工单，并逐单处理。 留意 Load Miss Inbound 包裹。长时间仍未入库的包裹，需要在群内汇报并继续跟进。"},"operation":"Puppis","review":{"en":"The draft does not specify how long a parcel must remain flagged before escalation.","zh":"长期仍未入库的具体上报时限待确认。"},"keyCheck":{"en":"\u003cp>Check for parcels flagged as \u003ccode>Load Miss Inbound\u003c/code>. Report any that remain flagged for a long time in the group chat and keep following them up.\u003c/p>\n","zh":"\u003cp>留意 \u003ccode>Load Miss Inbound\u003c/code> 包裹。长时间仍未入库的包裹，需要在群内汇报并继续跟进。\u003c/p>\n"},"aliases":["load miss inbound","missing from truck","truck missing parcel","linehaul discrepancy","干线漏件","到货少件"]}]},{"id":"2-2","title":{"en":"Parcel Delivery (Sorting and Dispatch)","zh":"包裹派送（分拣与dispatch）"},"part":"2","blocks":[{"id":"2-2","kind":"intro","title":{"en":"Parcel Delivery (Sorting and Dispatch)","zh":"包裹派送（分拣与dispatch）"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-2/step-1","kind":"step","title":{"en":"Assign Parcels to the Driver","zh":"仓库分配包裹"},"ordinal":"1","body":{"en":"\u003cp>The warehouse can assign parcels from one or more zones to the same driver using either method below.\u003c/p>\n\u003cp>\u003cstrong>Method 1. Find the driver and scan the parcels\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Dispatch\u003c/code>\u003c/li>\n\u003cli>Search for and select the driver assigned to this batch.\u003c/li>\n\u003cli>Scan each parcel on the PDA and check that every parcel in the batch has been scanned.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Method 2. Scan the driver's QR code\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Help Get Task\u003c/code>\u003c/li>\n\u003cli>Scan the driver's QR code, then scan and dispatch the parcels in the batch.\u003c/li>\n\u003c/ol>\n","zh":"\u003cp>仓库可将一个或多个 Zone 的包裹分配给同一名司机。有以下两种方式。\u003c/p>\n\u003cp>\u003cstrong>方式一　搜索司机后扫描包裹\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Dispatch\u003c/code>\u003c/li>\n\u003cli>搜索并选中负责派送这批包裹的司机。\u003c/li>\n\u003cli>用 PDA 逐票扫描包裹，核对本批包裹是否全部扫到。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>方式二　扫描司机二维码\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>PDA → \u003ccode>Help Get Task\u003c/code>\u003c/li>\n\u003cli>扫描司机出示的二维码，再扫描并分配本批包裹。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"The warehouse can assign parcels from one or more zones to the same driver using either method below.","zh":"仓库可将一个或多个 Zone 的包裹分配给同一名司机。有以下两种方式。"},"plain":{"en":"The warehouse can assign parcels from one or more zones to the same driver using either method below. Method 1. Find the driver and scan the parcels PDA → Dispatch Search for and select the driver assigned to this batch. Scan each parcel on the PDA and check that every parcel in the batch has been scanned. Method 2. Scan the driver's QR code PDA → Help Get Task Scan the driver's QR code, then scan and dispatch the parcels in the batch.","zh":"仓库可将一个或多个 Zone 的包裹分配给同一名司机。有以下两种方式。 方式一 搜索司机后扫描包裹 PDA → Dispatch 搜索并选中负责派送这批包裹的司机。 用 PDA 逐票扫描包裹，核对本批包裹是否全部扫到。 方式二 扫描司机二维码 PDA → Help Get Task 扫描司机出示的二维码，再扫描并分配本批包裹。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":["dispatch","assign driver","give parcels to driver","分配司机"]},{"id":"2-2/step-2","kind":"step","title":{"en":"Accept the Task in the Driver App","zh":"司机接收任务"},"ordinal":"2","body":{"en":"\u003cp>\u003cstrong>Method 1. Accept a batch through Get Task\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>Driver App → \u003ccode>Get Task\u003c/code>. \u003ccode>To Get\u003c/code> shows the parcel count after dispatch.\u003cbr />\nDrivers can also open \u003ccode>Get Task\u003c/code> directly from the notification.\u003c/li>\n\u003cli>Tap \u003ccode>Batch Get\u003c/code> to accept the batch.\u003c/li>\n\u003cli>Open \u003ccode>Got\u003c/code> and check that all parcels in the batch have been accepted.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Method 2. Accept parcels using Auth Code\u003c/strong>\u003c/p>\n\u003cp>Driver App → \u003ccode>Auth Code\u003c/code>. Show the QR code for the warehouse to scan in \u003ccode>Help Get Task\u003c/code>, then collect the parcels.\u003c/p>\n","zh":"\u003cp>\u003cstrong>方式一　通过 Get Task 批量领取\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>司机 App → \u003ccode>Get Task\u003c/code>。Dispatch 后，\u003ccode>To Get\u003c/code> 显示待领取件数。\u003cbr />\n收到 \u003ccode>Get Task\u003c/code> 通知时，也可从通知直接进入。\u003c/li>\n\u003cli>点击 \u003ccode>Batch Get\u003c/code> 领取。\u003c/li>\n\u003cli>进入 \u003ccode>Got\u003c/code>，核对已领取的包裹是否齐全。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>方式二　通过 Auth Code 领取\u003c/strong>\u003c/p>\n\u003cp>司机 App → \u003ccode>Auth Code\u003c/code>，出示二维码，仓库用 \u003ccode>Help Get Task\u003c/code> 扫描后领件。\u003c/p>\n"},"summary":{"en":"Method 1. Accept a batch through Get Task","zh":"方式一 通过 Get Task 批量领取"},"plain":{"en":"Method 1. Accept a batch through Get Task Driver App → Get Task. To Get shows the parcel count after dispatch. Drivers can also open Get Task directly from the notification. Tap Batch Get to accept the batch. Open Got and check that all parcels in the batch have been accepted. Method 2. Accept parcels using Auth Code Driver App → Auth Code. Show the QR code for the warehouse to scan in Help Get Task, then collect the parcels.","zh":"方式一 通过 Get Task 批量领取 司机 App → Get Task。Dispatch 后，To Get 显示待领取件数。 收到 Get Task 通知时，也可从通知直接进入。 点击 Batch Get 领取。 进入 Got，核对已领取的包裹是否齐全。 方式二 通过 Auth Code 领取 司机 App → Auth Code，出示二维码，仓库用 Help Get Task 扫描后领件。"},"operation":"Driver App","review":null,"keyCheck":{"en":"","zh":""},"aliases":["get task","driver accept load","driver pickup task","接任务"]},{"id":"2-2/step-3","kind":"step","title":{"en":"Start Delivering Parcels","zh":"司机开展派送"},"ordinal":"3","body":{"en":"\u003col>\n\u003cli>Driver App → \u003ccode>To Sign\u003c/code>. View parcels awaiting delivery.\u003c/li>\n\u003cli>Use \u003ccode>Same District\u003c/code> to filter parcels in the same district.\u003c/li>\n\u003cli>Open the parcel entry to send an OTP, call the customer or send a message using a template as needed.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>司机 App → \u003ccode>To Sign\u003c/code>，查看待派送包裹。\u003c/li>\n\u003cli>需要查看同一区域的包裹时，使用 \u003ccode>Same District\u003c/code> 筛选。\u003c/li>\n\u003cli>进入对应包裹，按需要发送 OTP、一键拨打顾客电话，或发送模板消息。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Driver App → To Sign. View parcels awaiting delivery.","zh":"司机 App → To Sign，查看待派送包裹。"},"plain":{"en":"Driver App → To Sign. View parcels awaiting delivery. Use Same District to filter parcels in the same district. Open the parcel entry to send an OTP, call the customer or send a message using a template as needed.","zh":"司机 App → To Sign，查看待派送包裹。 需要查看同一区域的包裹时，使用 Same District 筛选。 进入对应包裹，按需要发送 OTP、一键拨打顾客电话，或发送模板消息。"},"operation":"Driver App","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-2/step-4","kind":"step","title":{"en":"Record Each Delivery Outcome","zh":"更新派送结果"},"ordinal":"4","body":{"en":"\u003cp>Open the parcel in the driver app and choose the confirmation method or record the failure reason based on what happened.\u003c/p>\n\u003cp>\u003cstrong>OTP confirmation\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>Contact the customer for the OTP about 30 minutes before reaching the delivery address. You can also agree on a delivery time in advance and get the OTP when handing over the parcel in person.\u003c/li>\n\u003cli>Enter the OTP in the driver app to confirm delivery.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Proof of delivery confirmation\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>Ask the customer to show an ID, driver's licence or the Temu order page. If they show the Temu page, check that its GE tracking number matches the parcel label.\u003c/li>\n\u003cli>Take one photo showing both the evidence presented by the customer and the parcel label.\u003c/li>\n\u003cli>Ask the warehouse to enable \u003ccode>Allow Proof\u003c/code>. Once enabled, use Proof in the driver app to confirm delivery.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Unsuccessful delivery\u003c/strong>\u003c/p>\n\u003cp>In the driver app, select the reason in \u003ccode>Not Sign\u003c/code> that matches what happened.\u003c/p>\n","zh":"\u003cp>在司机 App 中打开对应包裹，根据实际派送结果选择签收方式或记录失败原因。\u003c/p>\n\u003cp>\u003cstrong>OTP 签收\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>预计到达收货地址前约 30 分钟联系顾客询问 OTP。也可以提前约定派送时间，在面对面交货时取得 OTP。\u003c/li>\n\u003cli>在司机 App 中填入 OTP，完成签收。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Proof 签收\u003c/strong>\u003c/p>\n\u003col>\n\u003cli>请顾客出示 ID、驾驶证或 Temu 下单页面。使用 Temu 页面时，核对其 GE 运单号与包裹面单一致。\u003c/li>\n\u003cli>将顾客出示的凭证与包裹面单拍进同一张照片。\u003c/li>\n\u003cli>向仓库申请 \u003ccode>Allow Proof\u003c/code>。仓库开启后，司机才可在 App 中使用 Proof 完成签收。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>派送失败\u003c/strong>\u003c/p>\n\u003cp>在司机 App 的 \u003ccode>Not Sign\u003c/code> 中选择与实际情况相符的失败原因。\u003c/p>\n"},"summary":{"en":"Open the parcel in the driver app and choose the confirmation method or record the failure reason based on what happened.","zh":"在司机 App 中打开对应包裹，根据实际派送结果选择签收方式或记录失败原因。"},"plain":{"en":"Open the parcel in the driver app and choose the confirmation method or record the failure reason based on what happened. OTP confirmation Contact the customer for the OTP about 30 minutes before reaching the delivery address. You can also agree on a delivery time in advance and get the OTP when handing over the parcel in person. Enter the OTP in the driver app to confirm delivery. Proof of delivery confirmation Ask the customer to show an ID, driver's licence or the Temu order page. If they show the Temu page, check that its GE tracking number matches the parcel label. Take one photo showing both the evidence presented by the customer and the parcel label. Ask the warehouse to enable Allow Proof. Once enabled, use Proof in the driver app to confirm delivery. Unsuccessful delivery In the driver app, select the reason in Not Sign that matches what happened.","zh":"在司机 App 中打开对应包裹，根据实际派送结果选择签收方式或记录失败原因。 OTP 签收 预计到达收货地址前约 30 分钟联系顾客询问 OTP。也可以提前约定派送时间，在面对面交货时取得 OTP。 在司机 App 中填入 OTP，完成签收。 Proof 签收 请顾客出示 ID、驾驶证或 Temu 下单页面。使用 Temu 页面时，核对其 GE 运单号与包裹面单一致。 将顾客出示的凭证与包裹面单拍进同一张照片。 向仓库申请 Allow Proof。仓库开启后，司机才可在 App 中使用 Proof 完成签收。 派送失败 在司机 App 的 Not Sign 中选择与实际情况相符的失败原因。"},"operation":"Driver App","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-2/failure-reasons","kind":"topic","title":{"en":"Delivery Failure Reasons and Next Actions for OFD Parcels","zh":"OFD 包裹派送失败原因与后续处理"},"ordinal":"","body":{"en":"\u003cp>When a delivery attempt fails, select the reason that matches what happened in \u003ccode>Not Sign\u003c/code>.\u003c/p>\n\u003cp>\u003cstrong>Customer Service (CS)\u003c/strong>\u003c/p>\n\u003cp>Under the current hub guidance, selecting any of the following reasons automatically starts the Customer Service workflow.\u003c/p>\n\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>Reason in the driver app\u003c/th>\n  \u003cth>Meaning\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>\u003ccode>02_Blocked\u003c/code>\u003c/td>\n  \u003ctd>Contact was blocked.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>05_Cancelled\u003c/code>\u003c/td>\n  \u003ctd>The customer cancelled.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>07_Want to open the order\u003c/code>\u003c/td>\n  \u003ctd>The customer wants to open the parcel.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>12_Wrong Mobile\u003c/code>\u003c/td>\n  \u003ctd>The customer's mobile number is incorrect.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>18_Can not enter address\u003c/code>\u003c/td>\n  \u003ctd>The driver cannot access the delivery address.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>30_Cancelled-Refuse to PayVAT/tariffs\u003c/code>\u003c/td>\n  \u003ctd>The delivery was cancelled because the customer refused to pay VAT or duties.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>\u003cstrong>No answer or delivery deferred\u003c/strong>\u003c/p>\n\u003cul>\n\u003cli>If there is no answer, bring the parcel back to the warehouse, scan it in, sort it again and send it out for delivery.\u003cbr />\nUnder the current hub guidance, five consecutive OFD attempts ending in \u003ccode>No Answer\u003c/code> trigger the Customer Service workflow.\u003c/li>\n\u003cli>For these two reasons, scan the returned parcel into the warehouse, sort it again and arrange the next delivery attempt.\u003cbr />\nThese two reasons have no retry limit of their own, so keep arranging delivery while the parcel is still eligible, until the customer receives it.\u003cbr />\nSee section \u003ca href=\"#2-3\">2-3\u003c/a> for storing and picking scheduled parcels and section \u003ca href=\"#2-5\">2-5\u003c/a> for automatic RTO.\u003c/li>\n\u003c/ul>\n\u003cp>\u003cstrong>RTO or transfer after an address change\u003c/strong>\u003c/p>\n\u003cul>\n\u003cli>Selecting \u003ccode>Opened by receipent\u003c/code>, \u003ccode>Damaged\u003c/code> or \u003ccode>Wrong Address → Out of Serviced Area\u003c/code> starts the RTO workflow.\u003c/li>\n\u003cli>Selecting \u003ccode>Wrong Address → Wrong City\u003c/code> starts the address correction and transfer process.\u003cbr />\nAfter obtaining and updating the correct address in the system, complete Load and transfer the parcel to the correct hub so it can scan the parcel in and arrange delivery.\u003c/li>\n\u003c/ul>\n","zh":"\u003cp>司机派送失败时，在 \u003ccode>Not Sign\u003c/code> 按实际情况选择对应原因。\u003c/p>\n\u003cp>\u003cstrong>进入客服流程\u003c/strong>\u003c/p>\n\u003cp>按当前站点操作口径，选择下列任一原因时，系统会自动触发客服流程。\u003c/p>\n\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>司机 App 原因\u003c/th>\n  \u003cth>含义\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>\u003ccode>02_Blocked\u003c/code>\u003c/td>\n  \u003ctd>联系被屏蔽。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>05_Cancelled\u003c/code>\u003c/td>\n  \u003ctd>顾客取消。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>07_Want to open the order\u003c/code>\u003c/td>\n  \u003ctd>顾客要求开包验货。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>12_Wrong Mobile\u003c/code>\u003c/td>\n  \u003ctd>顾客手机号码有误。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>18_Can not enter address\u003c/code>\u003c/td>\n  \u003ctd>无法进入收货地址。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>\u003ccode>30_Cancelled-Refuse to PayVAT/tariffs\u003c/code>\u003c/td>\n  \u003ctd>顾客拒付增值税或关税，取消派送。\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003cp>\u003cstrong>无人接听或暂未派送\u003c/strong>\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>\u003ccode>No Answer\u003c/code>\u003c/strong> 无人接听时，将包裹带回仓库，重新 Inbound、Sort，再安排 OFD。\u003cbr />\n按当前站点操作口径，连续 5 次 OFD 均为 \u003ccode>No Answer\u003c/code> 时会触发客服流程。\u003c/li>\n\u003cli>\u003cstrong>\u003ccode>Future Delivery\u003c/code> 或 \u003ccode>No Time for Deliver/Collect\u003c/code>\u003c/strong> 包裹回仓后重新 Inbound、Sort，再安排 OFD。\u003cbr />\n这两种原因本身不设重派次数上限，包裹仍符合派送条件时，继续安排派送直至签收。\u003cbr />\n预约件的上下架参见 \u003ca href=\"#2-3\">2-3\u003c/a>，长期未签收的自动退运参见 \u003ca href=\"#2-5\">2-5\u003c/a>。\u003c/li>\n\u003c/ul>\n\u003cp>\u003cstrong>触发退运或改址转仓\u003c/strong>\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>触发 RTO\u003c/strong> 选择 \u003ccode>Opened by receipent\u003c/code>（收件人已开包）、\u003ccode>Damaged\u003c/code>（破损）或 \u003ccode>Wrong Address → Out of Serviced Area\u003c/code>（地址超出服务范围）后，进入 RTO 流程。\u003c/li>\n\u003cli>\u003cstrong>\u003ccode>Wrong Address → Wrong City\u003c/code>\u003c/strong> 进入改址转仓流程。\u003cbr />\n拿到正确地址并在系统里更新后，做 Load 并把包裹转到对应 Hub，由目的 Hub 重新 Inbound 后安排派送。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"When a delivery attempt fails, select the reason that matches what happened in Not Sign.","zh":"司机派送失败时，在 Not Sign 按实际情况选择对应原因。"},"plain":{"en":"When a delivery attempt fails, select the reason that matches what happened in Not Sign. Customer Service (CS) Under the current hub guidance, selecting any of the following reasons automatically starts the Customer Service workflow. Reason in the driver app Meaning 02_Blocked Contact was blocked. 05_Cancelled The customer cancelled. 07_Want to open the order The customer wants to open the parcel. 12_Wrong Mobile The customer's mobile number is incorrect. 18_Can not enter address The driver cannot access the delivery address. 30_Cancelled-Refuse to PayVAT/tariffs The delivery was cancelled because the customer refused to pay VAT or duties. No answer or delivery deferred If there is no answer, bring the parcel back to the warehouse, scan it in, sort it again and send it out for delivery. Under the current hub guidance, five consecutive OFD attempts ending in No Answer trigger the Customer Service workflow. For these two reasons, scan the returned parcel into the warehouse, sort it again and arrange the next delivery attempt. These two reasons have no retry limit of their own, so keep arranging delivery while the parcel is still eligible, until the customer receives it. See section 2-3 for storing and picking scheduled parcels and section 2-5 for automatic RTO. RTO or transfer after an address change Selecting Opened by receipent, Damaged or Wrong Address → Out of Serviced Area starts the RTO workflow. Selecting Wrong Address → Wrong City starts the address correction and transfer process. After obtaining and updating the correct address in the system, complete Load and transfer the parcel to the correct hub so it can scan the parcel in and arrange delivery.","zh":"司机派送失败时，在 Not Sign 按实际情况选择对应原因。 进入客服流程 按当前站点操作口径，选择下列任一原因时，系统会自动触发客服流程。 司机 App 原因 含义 02_Blocked 联系被屏蔽。 05_Cancelled 顾客取消。 07_Want to open the order 顾客要求开包验货。 12_Wrong Mobile 顾客手机号码有误。 18_Can not enter address 无法进入收货地址。 30_Cancelled-Refuse to PayVAT/tariffs 顾客拒付增值税或关税，取消派送。 无人接听或暂未派送 No Answer 无人接听时，将包裹带回仓库，重新 Inbound、Sort，再安排 OFD。 按当前站点操作口径，连续 5 次 OFD 均为 No Answer 时会触发客服流程。 Future Delivery 或 No Time for Deliver/Collect 包裹回仓后重新 Inbound、Sort，再安排 OFD。 这两种原因本身不设重派次数上限，包裹仍符合派送条件时，继续安排派送直至签收。 预约件的上下架参见 2-3，长期未签收的自动退运参见 2-5。 触发退运或改址转仓 触发 RTO 选择 Opened by receipent（收件人已开包）、Damaged（破损）或 Wrong Address → Out of Serviced Area（地址超出服务范围）后，进入 RTO 流程。 Wrong Address → Wrong City 进入改址转仓流程。 拿到正确地址并在系统里更新后，做 Load 并把包裹转到对应 Hub，由目的 Hub 重新 Inbound 后安排派送。"},"operation":"Driver App","review":{"en":"Check the current app labels, the consecutive No Answer count and the VAT/duties trigger against an actual case.","zh":"当前 App 原因名称、No Answer 连续次数和拒付 VAT／关税触发规则待用实际运单核对。"},"keyCheck":{"en":"","zh":""},"aliases":["customer not answering","no answer","not signed","failed delivery","wrong city","拒签","无人接听","派送失败"]},{"id":"2-2/step-5","kind":"step","title":{"en":"Bring Undelivered Parcels Back","zh":"未签收包裹返仓"},"ordinal":"5","body":{"en":"\u003cp>When the delivery run ends, the driver returns undelivered parcels to the warehouse.\u003c/p>\n","zh":"\u003cp>司机完成本次任务后，将未成功签收的包裹送回仓库。\u003c/p>\n"},"summary":{"en":"When the delivery run ends, the driver returns undelivered parcels to the warehouse.","zh":"司机完成本次任务后，将未成功签收的包裹送回仓库。"},"plain":{"en":"When the delivery run ends, the driver returns undelivered parcels to the warehouse.","zh":"司机完成本次任务后，将未成功签收的包裹送回仓库。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["return to hub","failed parcels back to warehouse","司机退件"]},{"id":"2-2/step-6","kind":"step","title":{"en":"Scan Returned Parcels Back into Stock","zh":"返仓入库"},"ordinal":"6","body":{"en":"\u003cp>Warehouse staff scan the returned parcels using Inbound and hold them for the next Dispatch.\u003c/p>\n","zh":"\u003cp>仓库对退回的包裹重新操作 Inbound，等待后续 Dispatch。\u003c/p>\n"},"summary":{"en":"Warehouse staff scan the returned parcels using Inbound and hold them for the next Dispatch.","zh":"仓库对退回的包裹重新操作 Inbound，等待后续 Dispatch。"},"plain":{"en":"Warehouse staff scan the returned parcels using Inbound and hold them for the next Dispatch.","zh":"仓库对退回的包裹重新操作 Inbound，等待后续 Dispatch。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-2/delivery-follow-up-and-outcomes","kind":"topic","title":{"en":"Delivery Follow-up and Outcomes","zh":"派送跟进与签收注意事项"},"ordinal":"","body":{"en":"\u003cp>\u003cstrong>Delivery progress\u003c/strong>\u003c/p>\n\u003cp>Once drivers are out for delivery, the supervisor checks each driver's delivered parcel count, failed delivery count and reasons, and the number of parcels due back.\u003cbr />\nFollow up with drivers as needed, and drivers can contact the hub for help with any issues.\u003c/p>\n\u003cp>\u003cstrong>Driver app\u003c/strong>\u003c/p>\n\u003cp>Drivers need to install the driver app to view parcel details, accept tasks, record delivery outcomes, send OTPs and call customers directly from the app.\u003c/p>\n\u003cp>\u003ca href=\"https://s3.gfscdn.com/assets/inner-driver-app/apk/0.2.9/app-v29-gfs-release.apk\">Android（APK）\u003c/a> · \u003ca href=\"https://testflight.apple.com/join/fkibdDGf\">iOS（TestFlight）\u003c/a>\u003c/p>\n\u003cp>\u003cstrong>Timely returns\u003c/strong>\u003c/p>\n\u003cp>At the end of the delivery run, drivers should promptly bring back undelivered parcels, including parcels they could not deliver for reasons beyond their control, so the hub can plan the next delivery attempt.\u003c/p>\n","zh":"\u003cp>\u003cstrong>派送进度\u003c/strong>\u003c/p>\n\u003cp>司机出派后，主管在系统中按司机查看已签收件数、派送失败件数及原因，以及需要退回的件数。\u003cbr />\n根据情况主动联系司机跟进，司机遇到问题也可以联系站点寻求协助。\u003c/p>\n\u003cp>\u003cstrong>司机 App\u003c/strong>\u003c/p>\n\u003cp>司机需要安装司机 App，用于查看包裹信息、接收任务、更新派送结果、发送 OTP，以及在 App 内直接拨打顾客电话。\u003c/p>\n\u003cp>\u003ca href=\"https://s3.gfscdn.com/assets/inner-driver-app/apk/0.2.9/app-v29-gfs-release.apk\">Android（APK）\u003c/a> · \u003ca href=\"https://testflight.apple.com/join/fkibdDGf\">iOS（TestFlight）\u003c/a>\u003c/p>\n\u003cp>\u003cstrong>及时返仓\u003c/strong>\u003c/p>\n\u003cp>司机结束本次派送后，应及时将未签收或因客观原因未能完成派送的包裹带回仓库，以便站点安排下一次出派。\u003c/p>\n"},"summary":{"en":"Delivery progress","zh":"派送进度"},"plain":{"en":"Delivery progress Once drivers are out for delivery, the supervisor checks each driver's delivered parcel count, failed delivery count and reasons, and the number of parcels due back. Follow up with drivers as needed, and drivers can contact the hub for help with any issues. Driver app Drivers need to install the driver app to view parcel details, accept tasks, record delivery outcomes, send OTPs and call customers directly from the app. Android（APK） · iOS（TestFlight） Timely returns At the end of the delivery run, drivers should promptly bring back undelivered parcels, including parcels they could not deliver for reasons beyond their control, so the hub can plan the next delivery attempt.","zh":"派送进度 司机出派后，主管在系统中按司机查看已签收件数、派送失败件数及原因，以及需要退回的件数。 根据情况主动联系司机跟进，司机遇到问题也可以联系站点寻求协助。 司机 App 司机需要安装司机 App，用于查看包裹信息、接收任务、更新派送结果、发送 OTP，以及在 App 内直接拨打顾客电话。 Android（APK） · iOS（TestFlight） 及时返仓 司机结束本次派送后，应及时将未签收或因客观原因未能完成派送的包裹带回仓库，以便站点安排下一次出派。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"2-3","title":{"en":"Storing and Picking Parcels (Move & Pick)","zh":"包裹上下架（Move & Pick）"},"part":"2","blocks":[{"id":"2-3","kind":"intro","title":{"en":"Storing and Picking Parcels (Move & Pick)","zh":"包裹上下架（Move & Pick）"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["put away","shelf storage","move to location","pick task","预约件"]},{"id":"2-3/when-this-applies","kind":"topic","title":{"en":"When This Applies","zh":"适用情况"},"ordinal":"","body":{"en":"\u003cp>In the following situations, follow the PDA's Move to Location prompt to place the parcel on a shelf or in a storage location.\u003c/p>\n\u003cul>\n\u003cli>The customer books a delivery date.\u003c/li>\n\u003cli>The customer books another delivery date after an unsuccessful delivery attempt.\u003c/li>\n\u003cli>The customer cannot be reached for now and further contact is needed.\u003c/li>\n\u003cli>An RTO parcel is waiting for linehaul transfer.\u003c/li>\n\u003c/ul>\n","zh":"\u003cp>通常在以下情况下，需要根据 PDA 提示将包裹 Move to Location，上架至货架或库位：\u003c/p>\n\u003cul>\n\u003cli>顾客主动预约派送日期。\u003c/li>\n\u003cli>司机派送失败后，顾客重新预约派送日期。\u003c/li>\n\u003cli>暂时联系不上顾客，需要等待进一步联系结果。\u003c/li>\n\u003cli>RTO 包裹等待干线转运。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"In the following situations, follow the PDA's Move to Location prompt to place the parcel on a shelf or in a storage location.","zh":"通常在以下情况下，需要根据 PDA 提示将包裹 Move to Location，上架至货架或库位："},"plain":{"en":"In the following situations, follow the PDA's Move to Location prompt to place the parcel on a shelf or in a storage location. The customer books a delivery date. The customer books another delivery date after an unsuccessful delivery attempt. The customer cannot be reached for now and further contact is needed. An RTO parcel is waiting for linehaul transfer.","zh":"通常在以下情况下，需要根据 PDA 提示将包裹 Move to Location，上架至货架或库位： 顾客主动预约派送日期。 司机派送失败后，顾客重新预约派送日期。 暂时联系不上顾客，需要等待进一步联系结果。 RTO 包裹等待干线转运。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-3/step-1","kind":"step","title":{"en":"Store the Parcel as Directed","zh":"根据扫描提示上架"},"ordinal":"1","body":{"en":"\u003cp>Scan the parcel.\u003cbr />\nIf the PDA shows Move to Location, put the parcel on the indicated shelf or in the indicated storage location.\u003c/p>\n","zh":"\u003cp>扫描包裹。\u003cbr />\n如果 PDA 提示 Move to Location，将包裹上架至对应货架或库位。\u003c/p>\n"},"summary":{"en":"Scan the parcel.","zh":"扫描包裹。"},"plain":{"en":"Scan the parcel. If the PDA shows Move to Location, put the parcel on the indicated shelf or in the indicated storage location.","zh":"扫描包裹。 如果 PDA 提示 Move to Location，将包裹上架至对应货架或库位。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-3/step-2","kind":"step","title":{"en":"Create a Pick Task When the Parcel Is Ready","zh":"根据包裹情况创建 Pick Task"},"ordinal":"2","body":{"en":"\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>Parcel situation\u003c/th>\n  \u003cth>When to create a Pick Task\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>Scheduled delivery\u003c/td>\n  \u003ctd>Create a Pick Task in the last-mile system on the scheduled delivery date.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>RTO awaiting transfer\u003c/td>\n  \u003ctd>Create a Pick Task in the last-mile system on the day the linehaul truck arrives.\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>Customer cannot be reached for now\u003c/td>\n  \u003ctd>Keep the parcel on the shelf for now.\u003cbr>Once the customer gets in touch or Customer Service reaches them, create a Pick Task according to the confirmed arrangement.\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Reservation Order-Hub\u003c/code>\u003c/li>\n\u003cli>Select the date and tick the tracking numbers that need a Pick Task.\u003c/li>\n\u003cli>Click \u003ccode>Pick\u003c/code>.\u003c/li>\n\u003c/ol>\n","zh":"\u003cdiv class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Table\">\u003ctable>\n\u003cthead>\n\u003ctr>\n  \u003cth>包裹情况\u003c/th>\n  \u003cth>何时创建 Pick Task\u003c/th>\n\u003c/tr>\n\u003c/thead>\n\u003ctbody>\n\u003ctr>\n  \u003ctd>预约派送\u003c/td>\n  \u003ctd>在预约日期当天，于末派系统创建 Pick Task。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>RTO 等待转运\u003c/td>\n  \u003ctd>在干线到达当天，于末派系统创建 Pick Task。\u003c/td>\n\u003c/tr>\n\u003ctr>\n  \u003ctd>暂时联系不上顾客\u003c/td>\n  \u003ctd>先将包裹留在货架。\u003cbr>待顾客主动联系，或 CS 联系到顾客后，根据确认的处理安排创建 Pick Task。\u003c/td>\n\u003c/tr>\n\u003c/tbody>\n\u003c/table>\u003c/div>\n\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Reservation Order-Hub\u003c/code>\u003c/li>\n\u003cli>选择日期，勾选需要创建 Pick Task 的运单号。\u003c/li>\n\u003cli>点击 \u003ccode>Pick\u003c/code>。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"| Parcel situation | When to create a Pick Task |","zh":"| 包裹情况 | 何时创建 Pick Task |"},"plain":{"en":"Parcel situation When to create a Pick Task Scheduled delivery Create a Pick Task in the last-mile system on the scheduled delivery date. RTO awaiting transfer Create a Pick Task in the last-mile system on the day the linehaul truck arrives. Customer cannot be reached for now Keep the parcel on the shelf for now. Once the customer gets in touch or Customer Service reaches them, create a Pick Task according to the confirmed arrangement. Puppis → Warehouse → Reservation Order-Hub Select the date and tick the tracking numbers that need a Pick Task. Click Pick.","zh":"包裹情况 何时创建 Pick Task 预约派送 在预约日期当天，于末派系统创建 Pick Task。 RTO 等待转运 在干线到达当天，于末派系统创建 Pick Task。 暂时联系不上顾客 先将包裹留在货架。 待顾客主动联系，或 CS 联系到顾客后，根据确认的处理安排创建 Pick Task。 Puppis → Warehouse → Reservation Order-Hub 选择日期，勾选需要创建 Pick Task 的运单号。 点击 Pick。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-3/step-3","kind":"step","title":{"en":"Pick the Parcel","zh":"执行下架任务"},"ordinal":"3","body":{"en":"\u003col>\n\u003cli>PDA → \u003ccode>Pick\u003c/code>\u003c/li>\n\u003cli>Select the package type. The hub usually uses \u003ccode>To Sign Package\u003c/code> or \u003ccode>RTO Package\u003c/code>.\u003c/li>\n\u003cli>Scan the parcel and take it off the shelf or out of its storage location.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>PDA → \u003ccode>Pick\u003c/code>\u003c/li>\n\u003cli>选择对应类型。站点通常使用 \u003ccode>To Sign Package\u003c/code> 或 \u003ccode>RTO Package\u003c/code>。\u003c/li>\n\u003cli>扫描包裹，从对应货架或库位取下。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"PDA → Pick","zh":"PDA → Pick"},"plain":{"en":"PDA → Pick Select the package type. The hub usually uses To Sign Package or RTO Package. Scan the parcel and take it off the shelf or out of its storage location.","zh":"PDA → Pick 选择对应类型。站点通常使用 To Sign Package 或 RTO Package。 扫描包裹，从对应货架或库位取下。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-3/step-4","kind":"step","title":{"en":"Rescan the Parcel and Follow the PDA","zh":"重新扫描并执行下一步"},"ordinal":"4","body":{"en":"\u003cp>PDA → \u003ccode>Sort Common\u003c/code>. Rescan the parcel and follow the prompt.\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>To Sign parcels.\u003c/strong> Scan with \u003ccode>Sort Delivery\u003c/code>, place in the correct zone and hold for dispatch.\u003c/li>\n\u003cli>\u003cstrong>RTO parcels.\u003c/strong> Scan with \u003ccode>Sort Load\u003c/code>, pack into boxes and hold for linehaul transfer to JHB.\u003c/li>\n\u003c/ul>\n","zh":"\u003cp>PDA → \u003ccode>Sort Common\u003c/code>，重新扫描下架包裹，按提示处理。\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>To Sign 包裹\u003c/strong>　用 \u003ccode>Sort Delivery\u003c/code> 扫描，放到对应 Zone，等待 Dispatch。\u003c/li>\n\u003cli>\u003cstrong>RTO 包裹\u003c/strong>　用 \u003ccode>Sort Load\u003c/code> 扫描，装箱打包，等待干线转运至 JHB。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"PDA → Sort Common. Rescan the parcel and follow the prompt.","zh":"PDA → Sort Common，重新扫描下架包裹，按提示处理。"},"plain":{"en":"PDA → Sort Common. Rescan the parcel and follow the prompt. To Sign parcels. Scan with Sort Delivery, place in the correct zone and hold for dispatch. RTO parcels. Scan with Sort Load, pack into boxes and hold for linehaul transfer to JHB.","zh":"PDA → Sort Common，重新扫描下架包裹，按提示处理。 To Sign 包裹 用 Sort Delivery 扫描，放到对应 Zone，等待 Dispatch。 RTO 包裹 用 Sort Load 扫描，装箱打包，等待干线转运至 JHB。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-3/notes","kind":"topic","title":{"en":"Notes","zh":"注意事项"},"ordinal":"","body":{"en":"\u003cul>\n\u003cli>After completing Pick, follow the scan instructions and perform any required Dispatch or Load separately.\u003c/li>\n\u003cli>Schedule Pick Tasks according to the timing for each case: scheduled delivery, RTO or pending customer contact.\u003c/li>\n\u003c/ul>\n","zh":"\u003cul>\n\u003cli>Pick 完成后仍需继续按扫描指引处理；下架不等于已经完成 Dispatch 或 Load。\u003c/li>\n\u003cli>预约派送、RTO 和等待客户联系的包裹，创建 Pick Task 的时点不同，应分别安排。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"After completing Pick, follow the scan instructions and perform any required Dispatch or Load separately.","zh":"Pick 完成后仍需继续按扫描指引处理；下架不等于已经完成 Dispatch 或 Load。"},"plain":{"en":"After completing Pick, follow the scan instructions and perform any required Dispatch or Load separately. Schedule Pick Tasks according to the timing for each case: scheduled delivery, RTO or pending customer contact.","zh":"Pick 完成后仍需继续按扫描指引处理；下架不等于已经完成 Dispatch 或 Load。 预约派送、RTO 和等待客户联系的包裹，创建 Pick Task 的时点不同，应分别安排。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"2-4","title":{"en":"Transfers Between Hubs (Load)","zh":"跨站转运（Load）"},"part":"2","blocks":[{"id":"2-4","kind":"intro","title":{"en":"Transfers Between Hubs (Load)","zh":"跨站转运（Load）"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["wrong hub","misroute","cross hub","interhub transfer","串线","错站"]},{"id":"2-4/when-this-applies","kind":"topic","title":{"en":"When This Applies","zh":"适用情况"},"ordinal":"","body":{"en":"\u003cp>When a parcel is transferred between hubs, complete the Load scan.\u003cbr />\nA missed scan may generate a \u003ccode>LOAD_EXCEPTION\u003c/code> entry in the tracking log.\u003c/p>\n\u003cp>Common situations include the following.\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>Wrong destination from the sorting centre.\u003c/strong> A parcel for Pretoria may be sent from the JHB sorting centre to Bloemfontein and must then be transferred to the correct hub.\u003c/li>\n\u003cli>\u003cstrong>Transfer after an address change.\u003c/strong> The actual delivery address is outside the current hub's service area.\u003cbr />\nThis may be identified before the parcel goes out for delivery or confirmed by the customer during the delivery run.\u003c/li>\n\u003cli>\u003cstrong>RTO to Johannesburg.\u003c/strong> Arrange linehaul transfer for RTO parcels that need to go back to JHB.\u003c/li>\n\u003c/ul>\n","zh":"\u003cp>包裹从一个站点转运到另一个站点时，需要完成 Load 扫描。\u003cbr />\n漏扫可能产生 \u003ccode>LOAD_EXCEPTION\u003c/code> 日志。\u003c/p>\n\u003cp>常见场景包括：\u003c/p>\n\u003cul>\n\u003cli>\u003cstrong>分拨错发：\u003c/strong>例如，约堡分拨仓将应发往 Pretoria 的包裹发到了 Bloemfontein，需要转运至正确站点。\u003c/li>\n\u003cli>\u003cstrong>地址变更后需要转仓：\u003c/strong>包裹实际配送地址不在当前站点覆盖范围。\u003cbr />\n可能在出派前发现，也可能在派送过程中经顾客确认。\u003c/li>\n\u003cli>\u003cstrong>RTO 退回约堡：\u003c/strong>将需要退回 JHB 的 RTO 包裹安排干线转运。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"When a parcel is transferred between hubs, complete the Load scan.","zh":"包裹从一个站点转运到另一个站点时，需要完成 Load 扫描。"},"plain":{"en":"When a parcel is transferred between hubs, complete the Load scan. A missed scan may generate a LOAD_EXCEPTION entry in the tracking log. Common situations include the following. Wrong destination from the sorting centre. A parcel for Pretoria may be sent from the JHB sorting centre to Bloemfontein and must then be transferred to the correct hub. Transfer after an address change. The actual delivery address is outside the current hub's service area. This may be identified before the parcel goes out for delivery or confirmed by the customer during the delivery run. RTO to Johannesburg. Arrange linehaul transfer for RTO parcels that need to go back to JHB.","zh":"包裹从一个站点转运到另一个站点时，需要完成 Load 扫描。 漏扫可能产生 LOAD_EXCEPTION 日志。 常见场景包括： 分拨错发：例如，约堡分拨仓将应发往 Pretoria 的包裹发到了 Bloemfontein，需要转运至正确站点。 地址变更后需要转仓：包裹实际配送地址不在当前站点覆盖范围。 可能在出派前发现，也可能在派送过程中经顾客确认。 RTO 退回约堡：将需要退回 JHB 的 RTO 包裹安排干线转运。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-4/step-1","kind":"step","title":{"en":"Verify the Destination and Address","zh":"确认流向并处理地址"},"ordinal":"1","body":{"en":"\u003cp>Have an authorised person update the address if it is incorrect or has changed.\u003c/p>\n\u003cp>PDA → \u003ccode>Sort Common\u003c/code>. Scan the parcel and check the destination hub.\u003c/p>\n","zh":"\u003cp>地址错误或变更时，先由有权限的人员更新地址。\u003c/p>\n\u003cp>PDA → \u003ccode>Sort Common\u003c/code>，扫描包裹，确认目的 Hub。\u003c/p>\n"},"summary":{"en":"Have an authorised person update the address if it is incorrect or has changed.","zh":"地址错误或变更时，先由有权限的人员更新地址。"},"plain":{"en":"Have an authorised person update the address if it is incorrect or has changed. PDA → Sort Common. Scan the parcel and check the destination hub.","zh":"地址错误或变更时，先由有权限的人员更新地址。 PDA → Sort Common，扫描包裹，确认目的 Hub。"},"operation":"Puppis / PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-4/step-2","kind":"step","title":{"en":"Complete the Load Scan","zh":"完成 Load 扫描"},"ordinal":"2","body":{"en":"\u003cp>PDA → \u003ccode>Sort Load\u003c/code> or \u003ccode>Quick Tpl-load\u003c/code>. Scan the parcels for transfer.\u003c/p>\n\u003cp>Pack and seal the boxes after scanning. Load them when the truck arrives and take a photo. See the next two steps.\u003c/p>\n","zh":"\u003cp>PDA → \u003ccode>Sort Load\u003c/code> 或 \u003ccode>Quick Tpl-load\u003c/code>，扫描待转运包裹。\u003c/p>\n\u003cp>扫描后装箱打包，等干线到车后装车拍照。装箱和交接见后两步。\u003c/p>\n"},"summary":{"en":"PDA → Sort Load or Quick Tpl-load. Scan the parcels for transfer.","zh":"PDA → Sort Load 或 Quick Tpl-load，扫描待转运包裹。"},"plain":{"en":"PDA → Sort Load or Quick Tpl-load. Scan the parcels for transfer. Pack and seal the boxes after scanning. Load them when the truck arrives and take a photo. See the next two steps.","zh":"PDA → Sort Load 或 Quick Tpl-load，扫描待转运包裹。 扫描后装箱打包，等干线到车后装车拍照。装箱和交接见后两步。"},"operation":"PDA","review":{"en":"The applicable Sort Load or Quick Tpl - Load entry is pending a live screen check.","zh":"各场景应使用 Sort Load 还是 Quick Tpl - Load，待结合系统界面确认。"},"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-4/step-3","kind":"step","title":{"en":"Pack Parcels by Destination and Type","zh":"分类装箱"},"ordinal":"3","body":{"en":"\u003cp>After scanning, pack parcels into boxes by destination hub and parcel type.\u003cbr />\nPack RTO parcels for JHB together and hold them for the linehaul truck.\u003c/p>\n","zh":"\u003cp>扫描完成后，按目的站点及包裹类型分类装箱。\u003cbr />\n退回 JHB 的 RTO 包裹集中打包，等待干线车辆。\u003c/p>\n"},"summary":{"en":"After scanning, pack parcels into boxes by destination hub and parcel type.","zh":"扫描完成后，按目的站点及包裹类型分类装箱。"},"plain":{"en":"After scanning, pack parcels into boxes by destination hub and parcel type. Pack RTO parcels for JHB together and hold them for the linehaul truck.","zh":"扫描完成后，按目的站点及包裹类型分类装箱。 退回 JHB 的 RTO 包裹集中打包，等待干线车辆。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-4/step-4","kind":"step","title":{"en":"Hand Over the Boxes and Record the Transfer","zh":"干线交接与记录"},"ordinal":"4","body":{"en":"\u003cp>When the truck arrives, hand the boxes to the linehaul driver for loading, take a photo and record the handover.\u003c/p>\n","zh":"\u003cp>干线到车后，将对应箱子交给干线司机装车，拍照并记录交接。\u003c/p>\n"},"summary":{"en":"When the truck arrives, hand the boxes to the linehaul driver for loading, take a photo and record the handover.","zh":"干线到车后，将对应箱子交给干线司机装车，拍照并记录交接。"},"plain":{"en":"When the truck arrives, hand the boxes to the linehaul driver for loading, take a photo and record the handover.","zh":"干线到车后，将对应箱子交给干线司机装车，拍照并记录交接。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-4/notes","kind":"topic","title":{"en":"Notes","zh":"注意事项"},"ordinal":"","body":{"en":"\u003cul>\n\u003cli>Complete both the Load scan and the physical handover to the linehaul driver.\u003c/li>\n\u003cli>For a transfer after an address change, update the address first, rescan using Sort Common, then follow the instructions for Load.\u003c/li>\n\u003c/ul>\n","zh":"\u003cul>\n\u003cli>Load 扫描与实物交给干线车是两个动作，两者都需要完成。\u003c/li>\n\u003cli>改址转仓件应先修改地址、重新 Sort Common，再按指引操作 Load。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"Complete both the Load scan and the physical handover to the linehaul driver.","zh":"Load 扫描与实物交给干线车是两个动作，两者都需要完成。"},"plain":{"en":"Complete both the Load scan and the physical handover to the linehaul driver. For a transfer after an address change, update the address first, rescan using Sort Common, then follow the instructions for Load.","zh":"Load 扫描与实物交给干线车是两个动作，两者都需要完成。 改址转仓件应先修改地址、重新 Sort Common，再按指引操作 Load。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"2-5","title":{"en":"RTO and Reversing an RTO","zh":"RTO 与 RTO 回滚"},"part":"2","blocks":[{"id":"2-5","kind":"intro","title":{"en":"RTO and Reversing an RTO","zh":"RTO 与 RTO 回滚"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["return to origin","return to shipper","退回货主","自动退运"]},{"id":"2-5/starting-an-rto","kind":"topic","title":{"en":"Starting an RTO","zh":"发起 RTO"},"ordinal":"","body":{"en":"\u003cp>An incorrect customer phone or WhatsApp number may prevent delivery, and the driver should select the reason that matches what happened.\u003cbr />\n\u003ccode>Wrong Mobile\u003c/code> goes to Customer Service, and section \u003ca href=\"#2-2\">2-2\u003c/a> lists the failure reasons that trigger RTO.\u003c/p>\n\u003cp>Under the current hub guidance, the system automatically starts RTO after 21 days without a successful delivery.\u003cbr />\nThe event that starts the 21-day count and the parcel types covered still need to be checked against actual shipments.\u003c/p>\n","zh":"\u003cp>顾客电话或 WhatsApp 号码错误时，包裹可能派送失败，司机仍应选择与现场相符的失败原因。\u003cbr />\n\u003ccode>Wrong Mobile\u003c/code> 进入客服流程，触发 RTO 的失败原因见 \u003ca href=\"#2-2\">2-2\u003c/a>。\u003c/p>\n\u003cp>按当前站点口径，包裹持续未派送成功达 21 天时，系统会自动发起 RTO。\u003cbr />\n21 天从哪个节点起算、适用哪些包裹，待用实际运单核对。\u003c/p>\n"},"summary":{"en":"An incorrect customer phone or WhatsApp number may prevent delivery, and the driver should select the reason that matches what happened.","zh":"顾客电话或 WhatsApp 号码错误时，包裹可能派送失败，司机仍应选择与现场相符的失败原因。"},"plain":{"en":"An incorrect customer phone or WhatsApp number may prevent delivery, and the driver should select the reason that matches what happened. Wrong Mobile goes to Customer Service, and section 2-2 lists the failure reasons that trigger RTO. Under the current hub guidance, the system automatically starts RTO after 21 days without a successful delivery. The event that starts the 21-day count and the parcel types covered still need to be checked against actual shipments.","zh":"顾客电话或 WhatsApp 号码错误时，包裹可能派送失败，司机仍应选择与现场相符的失败原因。 Wrong Mobile 进入客服流程，触发 RTO 的失败原因见 2-2。 按当前站点口径，包裹持续未派送成功达 21 天时，系统会自动发起 RTO。 21 天从哪个节点起算、适用哪些包裹，待用实际运单核对。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"2-5/reverse-rto","kind":"topic","title":{"en":"Reversing an RTO when the customer requests delivery","zh":"顾客重新要求派送时回滚 RTO"},"ordinal":"","body":{"en":"\u003col>\n\u003cli>If the customer asks for delivery while the parcel is waiting for RTO, share the tracking number in the relevant hub's WeCom group and arrange the reversal.\u003c/li>\n\u003cli>Once the RTO reversal is confirmed, sort the parcel again within 30 minutes under the current operating guidance, then follow the system prompt to arrange delivery.\u003c/li>\n\u003cli>If the parcel is not sorted again promptly after reversal, the system may start RTO again.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>包裹在等待 RTO 期间，如顾客主动联系并要求继续派送，在所属 Hub 的 WeCom 群提供运单号并沟通回滚。\u003c/li>\n\u003cli>确认 RTO 回滚完成后，按当前操作要求在 30 分钟内重新 Sorting，并按照系统提示安排后续派送。\u003c/li>\n\u003cli>回滚后若未及时重新 Sorting，系统可能重新发起 RTO。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"If the customer asks for delivery while the parcel is waiting for RTO, share the tracking number in the relevant hub's WeCom group and arrange the reversal.","zh":"包裹在等待 RTO 期间，如顾客主动联系并要求继续派送，在所属 Hub 的 WeCom 群提供运单号并沟通回滚。"},"plain":{"en":"If the customer asks for delivery while the parcel is waiting for RTO, share the tracking number in the relevant hub's WeCom group and arrange the reversal. Once the RTO reversal is confirmed, sort the parcel again within 30 minutes under the current operating guidance, then follow the system prompt to arrange delivery. If the parcel is not sorted again promptly after reversal, the system may start RTO again.","zh":"包裹在等待 RTO 期间，如顾客主动联系并要求继续派送，在所属 Hub 的 WeCom 群提供运单号并沟通回滚。 确认 RTO 回滚完成后，按当前操作要求在 30 分钟内重新 Sorting，并按照系统提示安排后续派送。 回滚后若未及时重新 Sorting，系统可能重新发起 RTO。"},"operation":"WeCom / PDA","review":{"en":"Within 30 minutes is the current operating guidance. The exact system retrigger time is pending verification.","zh":"30 分钟内重新分拣是当前操作要求，系统再次触发 RTO 的实际时点待核对。"},"keyCheck":{"en":"","zh":""},"aliases":["undo rto","rto rollback","rto reversal","取消退运","撤销 RTO"]}]},{"id":"3-1","title":{"en":"Full Warehouse Stock Count","zh":"全库盘点"},"part":"3","blocks":[{"id":"3-1","kind":"intro","title":{"en":"Full Warehouse Stock Count","zh":"全库盘点"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["stocktake","stock take","inventory count","inventory audit","扫盘点"]},{"id":"3-1/preparation","kind":"topic","title":{"en":"Preparation. Create the Area and Print Its Barcode","zh":"前期准备：新增区域与条码"},"ordinal":"","body":{"en":"\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Stock\u003c/code>\u003c/li>\n\u003cli>Click \u003ccode>Add\u003c/code> to create a count area, such as a zone, RTO area or shelf.\u003c/li>\n\u003cli>Click \u003ccode>Print\u003c/code> and place the barcode at the corresponding area for scanning.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Stock\u003c/code>\u003c/li>\n\u003cli>点击 \u003ccode>Add\u003c/code> 新增盘点区域，例如 Zone、RTO 区或货架。\u003c/li>\n\u003cli>点击 \u003ccode>Print\u003c/code> 打印区域条码，贴在对应位置供盘点扫描。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Puppis → Warehouse → Stock","zh":"Puppis → Warehouse → Stock"},"plain":{"en":"Puppis → Warehouse → Stock Click Add to create a count area, such as a zone, RTO area or shelf. Click Print and place the barcode at the corresponding area for scanning.","zh":"Puppis → Warehouse → Stock 点击 Add 新增盘点区域，例如 Zone、RTO 区或货架。 点击 Print 打印区域条码，贴在对应位置供盘点扫描。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-1/step-1","kind":"step","title":{"en":"Create the Stock Count Plan","zh":"创建盘点计划"},"ordinal":"1","body":{"en":"\u003cp>The system automatically creates a stock count plan every Monday.\u003c/p>\n\u003cp>To create a plan manually\u003c/p>\n\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Stock Count Plan\u003c/code> → \u003ccode>Create\u003c/code>\u003c/li>\n\u003cli>Choose a full or partial count. For a partial count, select the areas to include.\u003c/li>\n\u003c/ol>\n","zh":"\u003cp>系统每周一自动创建一个盘点计划。\u003c/p>\n\u003cp>如需手动创建\u003c/p>\n\u003col>\n\u003cli>Puppis → \u003ccode>Warehouse\u003c/code> → \u003ccode>Stock Count Plan\u003c/code> → \u003ccode>Create\u003c/code>\u003c/li>\n\u003cli>选择全库盘点或部分盘点。部分盘点时，指定要盘点的区域。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"The system automatically creates a stock count plan every Monday.","zh":"系统每周一自动创建一个盘点计划。"},"plain":{"en":"The system automatically creates a stock count plan every Monday. To create a plan manually Puppis → Warehouse → Stock Count Plan → Create Choose a full or partial count. For a partial count, select the areas to include.","zh":"系统每周一自动创建一个盘点计划。 如需手动创建 Puppis → Warehouse → Stock Count Plan → Create 选择全库盘点或部分盘点。部分盘点时，指定要盘点的区域。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-1/step-2","kind":"step","title":{"en":"Select the Plan and Scan the Area","zh":"选择计划并扫描区域"},"ordinal":"2","body":{"en":"\u003col>\n\u003cli>PDA → \u003ccode>Stock Count\u003c/code>\u003c/li>\n\u003cli>Start the count using the plan's \u003ccode>Count ID\u003c/code>.\u003c/li>\n\u003cli>Tap \u003ccode>Count\u003c/code> for the area and scan its barcode.\u003c/li>\n\u003cli>Scan each parcel in the area.\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>Important.\u003c/strong> Everyone working on the same count uses the same \u003ccode>Count ID\u003c/code>.\u003c/p>\n","zh":"\u003col>\n\u003cli>PDA → \u003ccode>Stock Count\u003c/code>\u003c/li>\n\u003cli>按本次盘点计划的 \u003ccode>Count ID\u003c/code> 点击开始盘点。\u003c/li>\n\u003cli>点击对应区域的 \u003ccode>Count\u003c/code>，扫描该区域条码。\u003c/li>\n\u003cli>逐票扫描该区域的包裹。\u003c/li>\n\u003c/ol>\n\u003cp>\u003cstrong>本步注意\u003c/strong>　同一次盘点的参与人员使用同一个 \u003ccode>Count ID\u003c/code>。\u003c/p>\n"},"summary":{"en":"PDA → Stock Count","zh":"PDA → Stock Count"},"plain":{"en":"PDA → Stock Count Start the count using the plan's Count ID. Tap Count for the area and scan its barcode. Scan each parcel in the area. Important. Everyone working on the same count uses the same Count ID.","zh":"PDA → Stock Count 按本次盘点计划的 Count ID 点击开始盘点。 点击对应区域的 Count，扫描该区域条码。 逐票扫描该区域的包裹。 本步注意 同一次盘点的参与人员使用同一个 Count ID。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-1/step-3","kind":"step","title":{"en":"Finish One Area Before Moving to the Next","zh":"完成一个区域后再进入下一区域"},"ordinal":"3","body":{"en":"\u003cp>Scan all parcels in the current area and confirm the area count on the PDA before moving to the next area.\u003c/p>\n\u003cp>\u003cstrong>Important.\u003c/strong> People can count different areas at the same time, with only one person assigned to each area at a time.\u003c/p>\n","zh":"\u003cp>将当前区域的包裹全部扫描完毕，在 PDA 确认该区域盘点完成后，再进行下一个区域。\u003c/p>\n\u003cp>\u003cstrong>本步注意：\u003c/strong>可以多人同时盘点不同区域，但每个区域同一时间只能由一人负责盘点。\u003c/p>\n"},"summary":{"en":"Scan all parcels in the current area and confirm the area count on the PDA before moving to the next area.","zh":"将当前区域的包裹全部扫描完毕，在 PDA 确认该区域盘点完成后，再进行下一个区域。"},"plain":{"en":"Scan all parcels in the current area and confirm the area count on the PDA before moving to the next area. Important. People can count different areas at the same time, with only one person assigned to each area at a time.","zh":"将当前区域的包裹全部扫描完毕，在 PDA 确认该区域盘点完成后，再进行下一个区域。 本步注意：可以多人同时盘点不同区域，但每个区域同一时间只能由一人负责盘点。"},"operation":"PDA","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-1/step-4","kind":"step","title":{"en":"Set Aside Parcels Flagged as Extra","zh":"取出 Extra 包裹"},"ordinal":"4","body":{"en":"\u003cp>If the scan shows Extra, remove the parcel from the count area and set it aside with the other Extra parcels for review and follow-up.\u003c/p>\n","zh":"\u003cp>扫描时如显示 Extra，将对应包裹取出，集中等待后续核查和处理。\u003c/p>\n"},"summary":{"en":"If the scan shows Extra, remove the parcel from the count area and set it aside with the other Extra parcels for review and follow-up.","zh":"扫描时如显示 Extra，将对应包裹取出，集中等待后续核查和处理。"},"plain":{"en":"If the scan shows Extra, remove the parcel from the count area and set it aside with the other Extra parcels for review and follow-up.","zh":"扫描时如显示 Extra，将对应包裹取出，集中等待后续核查和处理。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-1/step-5","kind":"step","title":{"en":"Confirm the Stock Count and Handle Exception Tickets","zh":"确认盘点并处理异常工单"},"ordinal":"5","body":{"en":"\u003col>\n\u003cli>Once all areas are scanned and confirmed on the PDA, confirm the plan in Puppis and review the count details.\u003c/li>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/li>\n\u003cli>In \u003ccode>WorkOrderBizType\u003c/code>, select \u003ccode>Stock Count Missing\u003c/code> or \u003ccode>Stock Count Extra\u003c/code>. Review the \u003ccode>Processing\u003c/code> tickets, check the parcels and handle each case.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>各区域完成扫描和 PDA 确认后，在 Puppis 确认本次盘点计划并查看明细。\u003c/li>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Package Exception Task (Dispatch)\u003c/code>\u003c/li>\n\u003cli>在 \u003ccode>WorkOrderBizType\u003c/code> 选择 \u003ccode>Stock Count Missing\u003c/code> 或 \u003ccode>Stock Count Extra\u003c/code>，查看 \u003ccode>Processing\u003c/code> 工单，核对包裹并逐单处理。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Once all areas are scanned and confirmed on the PDA, confirm the plan in Puppis and review the count details.","zh":"各区域完成扫描和 PDA 确认后，在 Puppis 确认本次盘点计划并查看明细。"},"plain":{"en":"Once all areas are scanned and confirmed on the PDA, confirm the plan in Puppis and review the count details. Puppis → Work Order System → Package Exception Task (Dispatch) In WorkOrderBizType, select Stock Count Missing or Stock Count Extra. Review the Processing tickets, check the parcels and handle each case.","zh":"各区域完成扫描和 PDA 确认后，在 Puppis 确认本次盘点计划并查看明细。 Puppis → Work Order System → Package Exception Task (Dispatch) 在 WorkOrderBizType 选择 Stock Count Missing 或 Stock Count Extra，查看 Processing 工单，核对包裹并逐单处理。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":["stock count missing","stock count extra","stocktake discrepancy","盘盈","盘亏"]},{"id":"3-1/notes","kind":"topic","title":{"en":"Notes","zh":"注意事项"},"ordinal":"","body":{"en":"\u003cul>\n\u003cli>After scanning, complete the confirmation steps on both the PDA and the last-mile system.\u003c/li>\n\u003cli>Investigate Missing and Extra discrepancies using physical checks and tracking history before concluding that a parcel was lost or falsely marked as delivered.\u003c/li>\n\u003cli>Detailed steps for investigating and resolving stock count exceptions will be added later.\u003c/li>\n\u003c/ul>\n","zh":"\u003cul>\n\u003cli>扫描完成后，还需要完成 PDA 和末派系统中的确认动作。\u003c/li>\n\u003cli>Missing 和 Extra 属于待核查差异，需结合实物及轨迹调查，不能直接等同于丢件或虚假签收。\u003c/li>\n\u003cli>盘点异常工单的具体调查和处理步骤，后续继续细化。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"After scanning, complete the confirmation steps on both the PDA and the last-mile system.","zh":"扫描完成后，还需要完成 PDA 和末派系统中的确认动作。"},"plain":{"en":"After scanning, complete the confirmation steps on both the PDA and the last-mile system. Investigate Missing and Extra discrepancies using physical checks and tracking history before concluding that a parcel was lost or falsely marked as delivered. Detailed steps for investigating and resolving stock count exceptions will be added later.","zh":"扫描完成后，还需要完成 PDA 和末派系统中的确认动作。 Missing 和 Extra 属于待核查差异，需结合实物及轨迹调查，不能直接等同于丢件或虚假签收。 盘点异常工单的具体调查和处理步骤，后续继续细化。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"3-2","title":{"en":"Handling Customer Complaints","zh":"客诉处理"},"part":"3","blocks":[{"id":"3-2","kind":"intro","title":{"en":"Handling Customer Complaints","zh":"客诉处理"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["sbnr","sign but not receive","signed but not received","delivered not received","签收未收到"]},{"id":"3-2/priority-complaints","kind":"topic","title":{"en":"Priority Complaints","zh":"重点关注的客诉"},"ordinal":"","body":{"en":"\u003cp>The current priority is Signed but Not Received (SBNR) complaints, where the system shows the parcel as delivered but the customer says it did not arrive.\u003cbr />\nVerify whether the customer actually received the parcel, as these cases may lead to penalties from the shipper.\u003c/p>\n","zh":"\u003cp>当前重点跟进 Sign but Not Received（SBNR）客诉，即系统显示已签收，但顾客反馈未收到包裹。\u003cbr />\n这类问题需要核实真实收货情况，并涉及货主罚款风险。\u003c/p>\n"},"summary":{"en":"The current priority is Signed but Not Received (SBNR) complaints, where the system shows the parcel as delivered but the customer says it did not arrive.","zh":"当前重点跟进 Sign but Not Received（SBNR）客诉，即系统显示已签收，但顾客反馈未收到包裹。"},"plain":{"en":"The current priority is Signed but Not Received (SBNR) complaints, where the system shows the parcel as delivered but the customer says it did not arrive. Verify whether the customer actually received the parcel, as these cases may lead to penalties from the shipper.","zh":"当前重点跟进 Sign but Not Received（SBNR）客诉，即系统显示已签收，但顾客反馈未收到包裹。 这类问题需要核实真实收货情况，并涉及货主罚款风险。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-2/step-1","kind":"step","title":{"en":"Verify the Tracking Number","zh":"核对客诉单号"},"ordinal":"1","body":{"en":"\u003col>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Complaint Task\u003c/code>\u003c/li>\n\u003cli>Select \u003ccode>Sign but not receive (ZA)\u003c/code> in \u003ccode>Category\u003c/code>.\u003c/li>\n\u003cli>Review cases in \u003ccode>Processing\u003c/code> and use the GE tracking number to identify the parcel to investigate.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>Puppis → \u003ccode>Work Order System\u003c/code> → \u003ccode>Complaint Task\u003c/code>\u003c/li>\n\u003cli>在 \u003ccode>Category\u003c/code> 选择 \u003ccode>Sign but not receive (ZA)\u003c/code>。\u003c/li>\n\u003cli>查看状态为 \u003ccode>Processing\u003c/code> 的工单，用 GE 运单号核对要调查的包裹。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Puppis → Work Order System → Complaint Task","zh":"Puppis → Work Order System → Complaint Task"},"plain":{"en":"Puppis → Work Order System → Complaint Task Select Sign but not receive (ZA) in Category. Review cases in Processing and use the GE tracking number to identify the parcel to investigate.","zh":"Puppis → Work Order System → Complaint Task 在 Category 选择 Sign but not receive (ZA)。 查看状态为 Processing 的工单，用 GE 运单号核对要调查的包裹。"},"operation":"Puppis","review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-2/step-2","kind":"step","title":{"en":"Contact the Customer to Verify Receipt","zh":"联系顾客核实是否收到"},"ordinal":"2","body":{"en":"\u003cp>Use the customer's contact details in the system or ask the delivery driver for them if needed.\u003cbr />\nContact the customer to verify whether they received the parcel and record the outcome.\u003c/p>\n","zh":"\u003cp>从系统获取顾客联系方式，必要时向派送司机询问。\u003cbr />\n联系顾客，核实是否实际收到该包裹，并记录结果。\u003c/p>\n"},"summary":{"en":"Use the customer's contact details in the system or ask the delivery driver for them if needed.","zh":"从系统获取顾客联系方式，必要时向派送司机询问。"},"plain":{"en":"Use the customer's contact details in the system or ask the delivery driver for them if needed. Contact the customer to verify whether they received the parcel and record the outcome.","zh":"从系统获取顾客联系方式，必要时向派送司机询问。 联系顾客，核实是否实际收到该包裹，并记录结果。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-2/step-3","kind":"step","title":{"en":"Obtain Valid Proof of Delivery (POD)","zh":"取得有效 POD"},"ordinal":"3","body":{"en":"\u003cp>If the customer confirms receipt, obtain valid proof of delivery for that tracking number.\u003c/p>\n\u003cp>A WhatsApp chat screenshot should show both of the following.\u003c/p>\n\u003cul>\n\u003cli>The matching GE tracking number.\u003c/li>\n\u003cli>A reply from the customer clearly confirming they received the parcel.\u003c/li>\n\u003c/ul>\n","zh":"\u003cp>对于顾客确认已收到的包裹，取得与该运单对应的有效收货凭证。\u003c/p>\n\u003cp>例如，WhatsApp 聊天截图中应同时出现：\u003c/p>\n\u003cul>\n\u003cli>对应的 GE 运单号。\u003c/li>\n\u003cli>顾客明确确认已收到包裹的回复。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"If the customer confirms receipt, obtain valid proof of delivery for that tracking number.","zh":"对于顾客确认已收到的包裹，取得与该运单对应的有效收货凭证。"},"plain":{"en":"If the customer confirms receipt, obtain valid proof of delivery for that tracking number. A WhatsApp chat screenshot should show both of the following. The matching GE tracking number. A reply from the customer clearly confirming they received the parcel.","zh":"对于顾客确认已收到的包裹，取得与该运单对应的有效收货凭证。 例如，WhatsApp 聊天截图中应同时出现： 对应的 GE 运单号。 顾客明确确认已收到包裹的回复。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-2/step-4","kind":"step","title":{"en":"Record the Outcome and Follow Up","zh":"记录结果并跟进处理"},"ordinal":"4","body":{"en":"\u003cp>Once the customer confirms receipt, retain valid POD for the matching GE tracking number and close the complaint case.\u003cbr />\nIf the customer confirms they did not receive it, continue tracing the parcel and follow up on the case.\u003c/p>\n","zh":"\u003cp>顾客确认收到包裹后，保留与 GE 运单号对应的有效 POD，并关闭客诉工单。\u003cbr />\n若顾客确认未收到，则继续核查包裹去向，并跟进后续处理。\u003c/p>\n"},"summary":{"en":"Once the customer confirms receipt, retain valid POD for the matching GE tracking number and close the complaint case.","zh":"顾客确认收到包裹后，保留与 GE 运单号对应的有效 POD，并关闭客诉工单。"},"plain":{"en":"Once the customer confirms receipt, retain valid POD for the matching GE tracking number and close the complaint case. If the customer confirms they did not receive it, continue tracing the parcel and follow up on the case.","zh":"顾客确认收到包裹后，保留与 GE 运单号对应的有效 POD，并关闭客诉工单。 若顾客确认未收到，则继续核查包裹去向，并跟进后续处理。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"3-2/notes","kind":"topic","title":{"en":"Notes","zh":"注意事项"},"ordinal":"","body":{"en":"\u003cul>\n\u003cli>The POD must be genuine and match the GE tracking number in the complaint.\u003c/li>\n\u003cli>Fabricated POD is subject to penalties, with the specific rules to be added later.\u003c/li>\n\u003cli>Verify actual receipt before treating a parcel as received by the customer, even if the system marks it as delivered.\u003c/li>\n\u003c/ul>\n","zh":"\u003cul>\n\u003cli>POD 必须真实，且与本次客诉的 GE 运单号相对应。\u003c/li>\n\u003cli>伪造 POD 也会受到处罚，具体处罚规则后续补充。\u003c/li>\n\u003cli>不能只凭系统显示已签收，就认定顾客实际收到包裹。\u003c/li>\n\u003c/ul>\n"},"summary":{"en":"The POD must be genuine and match the GE tracking number in the complaint.","zh":"POD 必须真实，且与本次客诉的 GE 运单号相对应。"},"plain":{"en":"The POD must be genuine and match the GE tracking number in the complaint. Fabricated POD is subject to penalties, with the specific rules to be added later. Verify actual receipt before treating a parcel as received by the customer, even if the system marks it as delivered.","zh":"POD 必须真实，且与本次客诉的 GE 运单号相对应。 伪造 POD 也会受到处罚，具体处罚规则后续补充。 不能只凭系统显示已签收，就认定顾客实际收到包裹。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"4-1","title":{"en":"New Driver Onboarding","zh":"新司机加入"},"part":"4","blocks":[{"id":"4-1","kind":"intro","title":{"en":"New Driver Onboarding","zh":"新司机加入"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["driver recruiting","driver onboarding","招司机"]},{"id":"4-1/step-1","kind":"step","title":{"en":"Find and assess driver candidates","zh":"寻找及核实候选司机"},"ordinal":"1","body":{"en":"\u003cp>Find candidates through referrals from current drivers or other channels.\u003cbr />\nCheck how each candidate was referred or found, and assess their reliability, attitude towards work and suitability for the hub's delivery work.\u003c/p>\n","zh":"\u003cp>通过在岗司机推荐或其他渠道寻找候选司机。\u003cbr />\n核实候选人的来源、可靠性和工作态度，确认其适合站点的派送工作。\u003c/p>\n"},"summary":{"en":"Find candidates through referrals from current drivers or other channels.","zh":"通过在岗司机推荐或其他渠道寻找候选司机。"},"plain":{"en":"Find candidates through referrals from current drivers or other channels. Check how each candidate was referred or found, and assess their reliability, attitude towards work and suitability for the hub's delivery work.","zh":"通过在岗司机推荐或其他渠道寻找候选司机。 核实候选人的来源、可靠性和工作态度，确认其适合站点的派送工作。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"4-1/step-2","kind":"step","title":{"en":"Sign the SLA agreement","zh":"签署 SLA 合约"},"ordinal":"2","body":{"en":"\u003cp>Sign the SLA agreement with the driver and keep the signed document on file.\u003c/p>\n","zh":"\u003cp>与司机签署 SLA 合约，并留存已签署的文件。\u003c/p>\n"},"summary":{"en":"Sign the SLA agreement with the driver and keep the signed document on file.","zh":"与司机签署 SLA 合约，并留存已签署的文件。"},"plain":{"en":"Sign the SLA agreement with the driver and keep the signed document on file.","zh":"与司机签署 SLA 合约，并留存已签署的文件。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"4-1/step-3","kind":"step","title":{"en":"Create the driver account and enter bank details","zh":"创建司机账号并录入银行信息"},"ordinal":"3","body":{"en":"\u003col>\n\u003cli>\u003cp>Puppis → \u003ccode>Basic\u003c/code> → \u003ccode>Employee\u003c/code> → \u003ccode>Add\u003c/code>\u003c/p>\n\u003c/li>\n\u003cli>\u003cp>Enter the account details.\u003c/p>\n\u003cul>\n\u003cli>\u003ccode>Company\u003c/code> — Select \u003ccode>GFS ZA\u003c/code>.\u003c/li>\n\u003cli>\u003ccode>Account\u003c/code> — Use the driver's first name with a number suffix such as \u003ccode>01\u003c/code> or \u003ccode>02\u003c/code>.\u003c/li>\n\u003cli>\u003ccode>Password\u003c/code> — Set the driver's initial password.\u003c/li>\n\u003cli>\u003ccode>Name\u003c/code> — Enter the driver's full name.\u003c/li>\n\u003cli>\u003ccode>Role\u003c/code> — Select \u003ccode>Driver\u003c/code>.\u003c/li>\n\u003cli>\u003ccode>Hub\u003c/code> — Select the hub where the driver works.\u003c/li>\n\u003cli>\u003ccode>Position\u003c/code> — Select \u003ccode>Driver\u003c/code>.\u003c/li>\n\u003cli>\u003ccode>Status\u003c/code> — Use \u003ccode>On\u003c/code> while the driver is active and change it to \u003ccode>Off\u003c/code> when they stop working with us.\u003c/li>\n\u003c/ul>\n\u003c/li>\n\u003cli>\u003cp>Verify and enter \u003ccode>Bank Card Account\u003c/code>, \u003ccode>Bank Card Account ID\u003c/code> and \u003ccode>Branch Code\u003c/code>. Confirm all three fields, because incorrect bank details can affect payment to the driver.\u003c/p>\n\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>\u003cp>Puppis → \u003ccode>Basic\u003c/code> → \u003ccode>Employee\u003c/code> → \u003ccode>Add\u003c/code>\u003c/p>\n\u003c/li>\n\u003cli>\u003cp>填写账号资料。\u003c/p>\n\u003cul>\n\u003cli>\u003ccode>Company\u003c/code> 选择 \u003ccode>GFS ZA\u003c/code>。\u003c/li>\n\u003cli>\u003ccode>Account\u003c/code> 可用司机的 First Name 加 \u003ccode>01\u003c/code>、\u003ccode>02\u003c/code> 等数字后缀。\u003c/li>\n\u003cli>\u003ccode>Password\u003c/code> 设置司机的初始密码。\u003c/li>\n\u003cli>\u003ccode>Name\u003c/code> 填写司机全名。\u003c/li>\n\u003cli>\u003ccode>Role\u003c/code> 选择 \u003ccode>Driver\u003c/code>。\u003c/li>\n\u003cli>\u003ccode>Hub\u003c/code> 选择司机工作的 Hub。\u003c/li>\n\u003cli>\u003ccode>Position\u003c/code> 选择 \u003ccode>Driver\u003c/code>。\u003c/li>\n\u003cli>\u003ccode>Status\u003c/code> 在岗时选 \u003ccode>On\u003c/code>，停止合作后改为 \u003ccode>Off\u003c/code>。\u003c/li>\n\u003c/ul>\n\u003c/li>\n\u003cli>\u003cp>核对并填写 \u003ccode>Bank Card Account\u003c/code>、\u003ccode>Bank Card Account ID\u003c/code> 和 \u003ccode>Branch Code\u003c/code>。三项都要确认无误，银行信息填错会影响司机收款。\u003c/p>\n\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Puppis → Basic → Employee → Add","zh":"Puppis → Basic → Employee → Add"},"plain":{"en":"Puppis → Basic → Employee → Add Enter the account details. Company — Select GFS ZA. Account — Use the driver's first name with a number suffix such as 01 or 02. Password — Set the driver's initial password. Name — Enter the driver's full name. Role — Select Driver. Hub — Select the hub where the driver works. Position — Select Driver. Status — Use On while the driver is active and change it to Off when they stop working with us. Verify and enter Bank Card Account, Bank Card Account ID and Branch Code. Confirm all three fields, because incorrect bank details can affect payment to the driver.","zh":"Puppis → Basic → Employee → Add 填写账号资料。 Company 选择 GFS ZA。 Account 可用司机的 First Name 加 01、02 等数字后缀。 Password 设置司机的初始密码。 Name 填写司机全名。 Role 选择 Driver。 Hub 选择司机工作的 Hub。 Position 选择 Driver。 Status 在岗时选 On，停止合作后改为 Off。 核对并填写 Bank Card Account、Bank Card Account ID 和 Branch Code。三项都要确认无误，银行信息填错会影响司机收款。"},"operation":"Puppis","review":null,"keyCheck":{"en":"\u003cp>Verify and enter \u003ccode>Bank Card Account\u003c/code>, \u003ccode>Bank Card Account ID\u003c/code> and \u003ccode>Branch Code\u003c/code>. Confirm all three fields, because incorrect bank details can affect payment to the driver.\u003c/p>\n","zh":"\u003cp>核对并填写 \u003ccode>Bank Card Account\u003c/code>、\u003ccode>Bank Card Account ID\u003c/code> 和 \u003ccode>Branch Code\u003c/code>。三项都要确认无误，银行信息填错会影响司机收款。\u003c/p>\n"},"aliases":["driver registration","new driver account","bank card account","司机建号","银行资料"]},{"id":"4-1/step-4","kind":"step","title":{"en":"Train the driver on delivery confirmation","zh":"培训司机签收"},"ordinal":"4","body":{"en":"\u003cp>Train the new driver on delivery confirmation and proof of delivery.\u003c/p>\n","zh":"\u003cp>对新司机进行签收培训。\u003c/p>\n"},"summary":{"en":"Train the new driver on delivery confirmation and proof of delivery.","zh":"对新司机进行签收培训。"},"plain":{"en":"Train the new driver on delivery confirmation and proof of delivery.","zh":"对新司机进行签收培训。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"4-1/step-5","kind":"step","title":{"en":"Arrange a trial delivery run","zh":"安排试派送"},"ordinal":"5","body":{"en":"\u003cp>Arrange a trial delivery run.\u003c/p>\n","zh":"\u003cp>安排试派送。\u003c/p>\n"},"summary":{"en":"Arrange a trial delivery run.","zh":"安排试派送。"},"plain":{"en":"Arrange a trial delivery run.","zh":"安排试派送。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"4-2","title":{"en":"Driver Payments","zh":"司机发薪"},"part":"4","blocks":[{"id":"4-2","kind":"intro","title":{"en":"Driver Payments","zh":"司机发薪"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["driver salary","driver payroll","driver wages","payday","司机结算"]},{"id":"4-2/pay-schedule","kind":"topic","title":{"en":"Pay schedule","zh":"发薪时间"},"ordinal":"","body":{"en":"\u003cp>Drivers are normally paid on Mondays.\u003cbr />\nSome bank transfers take longer, so some drivers may receive the money on Tuesday.\u003c/p>\n","zh":"\u003cp>司机通常每周一发薪。\u003cbr />\n部分银行转账处理较慢，司机可能在周二才收到款项。\u003c/p>\n"},"summary":{"en":"Drivers are normally paid on Mondays.","zh":"司机通常每周一发薪。"},"plain":{"en":"Drivers are normally paid on Mondays. Some bank transfers take longer, so some drivers may receive the money on Tuesday.","zh":"司机通常每周一发薪。 部分银行转账处理较慢，司机可能在周二才收到款项。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"4-2/financial","kind":"topic","title":{"en":"Confirming Financial tasks","zh":"Financial 确认"},"ordinal":"","body":{"en":"\u003cp>The system creates a Manifest each time a driver takes a batch out for delivery.\u003c/p>\n\u003col>\n\u003cli>Puppis → \u003ccode>Task\u003c/code> → \u003ccode>Financial\u003c/code>\u003c/li>\n\u003cli>Find the relevant driver and batch. Check the number of parcels collected, delivered, still awaiting delivery and marked as failed for that cycle.\u003c/li>\n\u003cli>Check that undelivered parcels have physically returned to the warehouse. Once \u003ccode>To Sign\u003c/code> is \u003ccode>0\u003c/code> and every parcel in the batch has been delivered or physically returned, promptly confirm the Manifest in \u003ccode>Financial\u003c/code>.\u003c/li>\n\u003c/ol>\n\u003cp>Under the current hub procedure, the driver cannot collect new parcels and the fees for that batch cannot be settled while \u003ccode>Financial\u003c/code> remains unconfirmed.\u003c/p>\n\u003cp>HR normally prepares driver payroll on Sunday for payment on Monday.\u003cbr />\nAim to confirm eligible Manifests before Sunday.\u003cbr />\nIf a Manifest misses the Sunday payroll run, the delivery fees for that task may be paid one weekly cycle later.\u003c/p>\n","zh":"\u003cp>司机每次领件出派，系统会生成对应的任务单（Manifest）。\u003c/p>\n\u003col>\n\u003cli>Puppis → \u003ccode>Task\u003c/code> → \u003ccode>Financial\u003c/code>\u003c/li>\n\u003cli>找到对应司机及批次，查看该周期的领件数、已签收数、待签收数和派送失败数。\u003c/li>\n\u003cli>核对未签收件是否已实际退回仓库。确认 \u003ccode>To Sign\u003c/code> 为 \u003ccode>0\u003c/code>，且本批每票包裹都已签收或实际退回仓库后，及时在 \u003ccode>Financial\u003c/code> 确认任务单。\u003c/li>\n\u003c/ol>\n\u003cp>按当前站点口径，未确认 \u003ccode>Financial\u003c/code> 时，司机无法领取新的包裹，该批次派费也无法结算。\u003c/p>\n\u003cp>HR 通常在周日汇总司机薪资，周一安排付款。\u003cbr />\n建议在周日前确认符合条件的任务单。\u003cbr />\n如果错过周日汇总，对应派费可能顺延一个发薪周期。\u003c/p>\n"},"summary":{"en":"The system creates a Manifest each time a driver takes a batch out for delivery.","zh":"司机每次领件出派，系统会生成对应的任务单（Manifest）。"},"plain":{"en":"The system creates a Manifest each time a driver takes a batch out for delivery. Puppis → Task → Financial Find the relevant driver and batch. Check the number of parcels collected, delivered, still awaiting delivery and marked as failed for that cycle. Check that undelivered parcels have physically returned to the warehouse. Once To Sign is 0 and every parcel in the batch has been delivered or physically returned, promptly confirm the Manifest in Financial. Under the current hub procedure, the driver cannot collect new parcels and the fees for that batch cannot be settled while Financial remains unconfirmed. HR normally prepares driver payroll on Sunday for payment on Monday. Aim to confirm eligible Manifests before Sunday. If a Manifest misses the Sunday payroll run, the delivery fees for that task may be paid one weekly cycle later.","zh":"司机每次领件出派，系统会生成对应的任务单（Manifest）。 Puppis → Task → Financial 找到对应司机及批次，查看该周期的领件数、已签收数、待签收数和派送失败数。 核对未签收件是否已实际退回仓库。确认 To Sign 为 0，且本批每票包裹都已签收或实际退回仓库后，及时在 Financial 确认任务单。 按当前站点口径，未确认 Financial 时，司机无法领取新的包裹，该批次派费也无法结算。 HR 通常在周日汇总司机薪资，周一安排付款。 建议在周日前确认符合条件的任务单。 如果错过周日汇总，对应派费可能顺延一个发薪周期。"},"operation":"Puppis","review":null,"keyCheck":{"en":"\u003cp>Check that undelivered parcels have physically returned to the warehouse. Once \u003ccode>To Sign\u003c/code> is \u003ccode>0\u003c/code> and every parcel in the batch has been delivered or physically returned, promptly confirm the Manifest in \u003ccode>Financial\u003c/code>.\u003c/p>\n","zh":"\u003cp>核对未签收件是否已实际退回仓库。确认 \u003ccode>To Sign\u003c/code> 为 \u003ccode>0\u003c/code>，且本批每票包裹都已签收或实际退回仓库后，及时在 \u003ccode>Financial\u003c/code> 确认任务单。\u003c/p>\n"},"aliases":["confirm financial","financial confirmation","confirm manifest","manifest confirmation","确认派费"]},{"id":"4-2/payment-issues","kind":"topic","title":{"en":"Payment issues","zh":"薪资异常"},"ordinal":"","body":{"en":"\u003cp>Drivers can check the delivery fee for each parcel in the driver app.\u003cbr />\nIf bank details are incorrect or a driver reports being underpaid, collect the details of the issue and raise it in the relevant hub's WeCom group.\u003c/p>\n","zh":"\u003cp>司机可以在司机 App 查看每票包裹的派费。\u003cbr />\n发现银行信息有误，或司机反馈少发薪资时，收集具体情况后，在所属 Hub 的 WeCom 群反馈。\u003c/p>\n"},"summary":{"en":"Drivers can check the delivery fee for each parcel in the driver app.","zh":"司机可以在司机 App 查看每票包裹的派费。"},"plain":{"en":"Drivers can check the delivery fee for each parcel in the driver app. If bank details are incorrect or a driver reports being underpaid, collect the details of the issue and raise it in the relevant hub's WeCom group.","zh":"司机可以在司机 App 查看每票包裹的派费。 发现银行信息有误，或司机反馈少发薪资时，收集具体情况后，在所属 Hub 的 WeCom 群反馈。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"4-3","title":{"en":"Driver Deductions and Top-ups","zh":"司机扣罚/津贴"},"part":"4","blocks":[{"id":"4-3","kind":"intro","title":{"en":"Driver Deductions and Top-ups","zh":"司机扣罚/津贴"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["driver fine","penalty","top up","topup","allowance","司机补贴"]},{"id":"4-3/driver-deductions","kind":"topic","title":{"en":"Driver deductions","zh":"司机扣罚"},"ordinal":"","body":{"en":"\u003col>\n\u003cli>Puppis → \u003ccode>HR Workbench\u003c/code> → \u003ccode>Salary Detail (New)\u003c/code> → \u003ccode>Add\u003c/code>\u003c/li>\n\u003cli>Select the relevant \u003ccode>Hub\u003c/code> and \u003ccode>Employee\u003c/code>, then enter the actual reason and the tracking number.\u003c/li>\n\u003cli>Select \u003ccode>Deduction\u003c/code> and enter the deduction amount. The system records it as a negative amount automatically.\u003c/li>\n\u003cli>Before submitting, share the completed deduction details in the relevant hub's WeCom group.\u003c/li>\n\u003c/ol>\n","zh":"\u003col>\n\u003cli>Puppis → \u003ccode>HR Workbench\u003c/code> → \u003ccode>Salary Detail (New)\u003c/code> → \u003ccode>Add\u003c/code>\u003c/li>\n\u003cli>选择对应的 \u003ccode>Hub\u003c/code> 和 \u003ccode>Employee\u003c/code>，填写实际扣罚原因和具体运单号。\u003c/li>\n\u003cli>选择 \u003ccode>Deduction\u003c/code> 后直接填写扣罚金额，系统会自动按负数计算。\u003c/li>\n\u003cli>提交前，将已填写的扣罚信息发到所属 Hub 的 WeCom 群，同步本次扣罚情况。\u003c/li>\n\u003c/ol>\n"},"summary":{"en":"Puppis → HR Workbench → Salary Detail (New) → Add","zh":"Puppis → HR Workbench → Salary Detail (New) → Add"},"plain":{"en":"Puppis → HR Workbench → Salary Detail (New) → Add Select the relevant Hub and Employee, then enter the actual reason and the tracking number. Select Deduction and enter the deduction amount. The system records it as a negative amount automatically. Before submitting, share the completed deduction details in the relevant hub's WeCom group.","zh":"Puppis → HR Workbench → Salary Detail (New) → Add 选择对应的 Hub 和 Employee，填写实际扣罚原因和具体运单号。 选择 Deduction 后直接填写扣罚金额，系统会自动按负数计算。 提交前，将已填写的扣罚信息发到所属 Hub 的 WeCom 群，同步本次扣罚情况。"},"operation":"Puppis / WeCom","review":null,"keyCheck":{"en":"\u003cp>Before submitting, share the completed deduction details in the relevant hub's WeCom group.\u003c/p>\n","zh":"\u003cp>提交前，将已填写的扣罚信息发到所属 Hub 的 WeCom 群，同步本次扣罚情况。\u003c/p>\n"},"aliases":[]},{"id":"4-3/driver-top-ups","kind":"topic","title":{"en":"Driver top-ups","zh":"司机津贴"},"ordinal":"","body":{"en":"\u003cp>Additional payments for individual drivers are usually handled as parcel-level top-ups.\u003cbr />\nWhen a top-up is needed, discuss the reason in the relevant hub's WeCom group in advance and share the affected tracking numbers and top-up amounts.\u003c/p>\n\u003cp>The specific situations in which deductions and top-ups apply will be added later.\u003c/p>\n","zh":"\u003cp>个别司机的补贴一般按包裹做 Top up。\u003cbr />\n需要补贴时，提前在所属 Hub 的 WeCom 群沟通补贴原因，并发出涉及的运单号及补贴金额。\u003c/p>\n\u003cp>扣罚和补贴的具体适用场景后续补充。\u003c/p>\n"},"summary":{"en":"Additional payments for individual drivers are usually handled as parcel-level top-ups.","zh":"个别司机的补贴一般按包裹做 Top up。"},"plain":{"en":"Additional payments for individual drivers are usually handled as parcel-level top-ups. When a top-up is needed, discuss the reason in the relevant hub's WeCom group in advance and share the affected tracking numbers and top-up amounts. The specific situations in which deductions and top-ups apply will be added later.","zh":"个别司机的补贴一般按包裹做 Top up。 需要补贴时，提前在所属 Hub 的 WeCom 群沟通补贴原因，并发出涉及的运单号及补贴金额。 扣罚和补贴的具体适用场景后续补充。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"4-4","title":{"en":"Site Management","zh":"站点管理"},"part":"4","blocks":[{"id":"4-4","kind":"intro","title":{"en":"Site Management","zh":"站点管理"},"ordinal":"","body":{"en":"","zh":""},"summary":{"en":"","zh":""},"plain":{"en":"","zh":""},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":["staff schedule","shift roster","overtime","仓库排班"]},{"id":"4-4/staff-rosters","kind":"topic","title":{"en":"Staff rosters","zh":"排班"},"ordinal":"","body":{"en":"\u003cp>The hub supervisor manages the warehouse staff roster, normally scheduling each staff member for six days per week.\u003cbr />\nAvoid unnecessary overtime.\u003cbr />\nWhen overtime is needed for operations, request approval in advance through the hub's WeCom channel and schedule the overtime once it is approved.\u003c/p>\n","zh":"\u003cp>站点主管负责仓内员工排班，正常情况下按每人每周 6 天安排。\u003cbr />\n避免非必要加班。\u003cbr />\n确因运营需要加班时，提前通过所属 Hub 的 WeCom 申请，获批后再安排。\u003c/p>\n"},"summary":{"en":"The hub supervisor manages the warehouse staff roster, normally scheduling each staff member for six days per week.","zh":"站点主管负责仓内员工排班，正常情况下按每人每周 6 天安排。"},"plain":{"en":"The hub supervisor manages the warehouse staff roster, normally scheduling each staff member for six days per week. Avoid unnecessary overtime. When overtime is needed for operations, request approval in advance through the hub's WeCom channel and schedule the overtime once it is approved.","zh":"站点主管负责仓内员工排班，正常情况下按每人每周 6 天安排。 避免非必要加班。 确因运营需要加班时，提前通过所属 Hub 的 WeCom 申请，获批后再安排。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]},{"id":"4-4/overtime-records-and-requests","kind":"topic","title":{"en":"Overtime records and requests","zh":"加班工时与申请"},"ordinal":"","body":{"en":"\u003cp>Calculate operators' overtime hours using their actual clock-in and clock-out records.\u003cbr />\nSupervisors and team leaders must submit overtime requests in WeCom.\u003c/p>\n","zh":"\u003cp>Operator 的加班时长按打卡机记录的实际打卡时间核算。\u003cbr />\nSupervisor 和 Team Leader 需要在 WeCom 提交加班申请。\u003c/p>\n"},"summary":{"en":"Calculate operators' overtime hours using their actual clock-in and clock-out records.","zh":"Operator 的加班时长按打卡机记录的实际打卡时间核算。"},"plain":{"en":"Calculate operators' overtime hours using their actual clock-in and clock-out records. Supervisors and team leaders must submit overtime requests in WeCom.","zh":"Operator 的加班时长按打卡机记录的实际打卡时间核算。 Supervisor 和 Team Leader 需要在 WeCom 提交加班申请。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"5-1","title":{"en":"OFD Report (Daily)","zh":"OFD Report（每日）"},"part":"5","blocks":[{"id":"5-1","kind":"intro","title":{"en":"OFD Report (Daily)","zh":"OFD Report（每日）"},"ordinal":"","body":{"en":"\u003cp>Steps to be added.\u003c/p>\n","zh":"\u003cp>操作步骤待补。\u003c/p>\n"},"summary":{"en":"Steps to be added.","zh":"操作步骤待补。"},"plain":{"en":"Steps to be added.","zh":"操作步骤待补。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"5-2","title":{"en":"Financial Report (Daily)","zh":"Financial Report（每日）"},"part":"5","blocks":[{"id":"5-2","kind":"intro","title":{"en":"Financial Report (Daily)","zh":"Financial Report（每日）"},"ordinal":"","body":{"en":"\u003cp>Steps to be added.\u003c/p>\n","zh":"\u003cp>操作步骤待补。\u003c/p>\n"},"summary":{"en":"Steps to be added.","zh":"操作步骤待补。"},"plain":{"en":"Steps to be added.","zh":"操作步骤待补。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"5-3","title":{"en":"Drivers Performance (Daily)","zh":"Drivers Performance（每日）"},"part":"5","blocks":[{"id":"5-3","kind":"intro","title":{"en":"Drivers Performance (Daily)","zh":"Drivers Performance（每日）"},"ordinal":"","body":{"en":"\u003cp>Steps to be added.\u003c/p>\n","zh":"\u003cp>操作步骤待补。\u003c/p>\n"},"summary":{"en":"Steps to be added.","zh":"操作步骤待补。"},"plain":{"en":"Steps to be added.","zh":"操作步骤待补。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]},{"id":"5-4","title":{"en":"Stock Count Report (Weekly)","zh":"Stock Count Report（每周）"},"part":"5","blocks":[{"id":"5-4","kind":"intro","title":{"en":"Stock Count Report (Weekly)","zh":"Stock Count Report（每周）"},"ordinal":"","body":{"en":"\u003cp>Steps to be added.\u003c/p>\n","zh":"\u003cp>操作步骤待补。\u003c/p>\n"},"summary":{"en":"Steps to be added.","zh":"操作步骤待补。"},"plain":{"en":"Steps to be added.","zh":"操作步骤待补。"},"operation":null,"review":null,"keyCheck":{"en":"","zh":""},"aliases":[]}]}]}</script>
+  <script>(() => {
+  "use strict";
+  const handbook = JSON.parse(document.getElementById("handbook-data").textContent);
+  const byId = id => document.getElementById(id);
+  const pages = new Map(handbook.pages.map(page => [page.id, page]));
+  const parts = new Map(handbook.parts.map(part => [part.id, part]));
+  const directory = byId("directory");
+  const article = byId("document");
+  const search = byId("search-dialog");
+  const query = byId("query");
+  const results = byId("results");
+  const sheet = byId("sheet");
+  const searchTrigger = byId("search-trigger");
+  const labels = {
+    en: {
+      brand: "Hub Operations", search: "Search handbook", enter: "Open handbook",
+      narrow: "Desktop preview · Open on a computer for the full layout.",
+      skip: "Skip to content", contents: "Handbook contents", onPage: "On this page",
+      placeholder: "Search steps, statuses or issues…", move: "Navigate", open: "Open",
+      suggested: "Suggested pages", match: "matches", oneMatch: "1 match",
+      noMatch: "No matching steps. Try a shorter phrase or a system term.",
+      view: "View operation", viewReasons: "View reasons", viewStatuses: "View statuses", check: "To verify",
+      closeSheet: "Close instructions", closeSearch: "Close search", table: "Scrollable table",
+      step: "Step ", keyCheck: "Key check", next: "Next step", language: "Language", home: "GFS OPS home",
+    },
+    zh: {
+      brand: "站点运营手册", search: "搜索手册", enter: "进入手册",
+      narrow: "电脑端试读版 · 请在电脑上打开完整布局。",
+      skip: "跳到正文", contents: "手册目录", onPage: "本页目录",
+      placeholder: "搜索步骤、状态或现场问题…", move: "选择", open: "打开",
+      suggested: "常查步骤", match: "条结果", oneMatch: "1 条结果",
+      noMatch: "没有找到相关步骤。可试试较短的关键词或系统原名。",
+      view: "查看操作", viewReasons: "查看原因", viewStatuses: "查看状态说明", check: "待核对",
+      closeSheet: "关闭操作详情", closeSearch: "关闭搜索", table: "可滚动表格",
+      step: "步骤 ", keyCheck: "操作要点", next: "下一步", language: "语言", home: "GFS OPS 首页",
+    },
+  };
+  let lang = "en";
+  try {
+    if (localStorage.getItem("gfs-ops-language") === "zh") lang = "zh";
+  } catch { /* Allow file URLs where browser storage is disabled. */ }
+
+  let drawnPage = null;
+  let drawnLanguage = null;
+  let currentResults = [];
+  let selectedResult = 0;
+  let sheetOrigin = null;
+  let searchOrigin = null;
+  let skipRestore = false;
+
+  const t = key => labels[lang][key];
+  const esc = value => String(value).replace(/[&<>"']/g, char =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+  const operationName = block => lang === "zh"
+    ? block.operation.replace("Driver App", "司机 App").replace("System", "系统")
+    : block.operation;
+  const pathFor = page => parts.get(page.part).title[lang] + " / " + page.id;
+  const labelFor = block => block.ordinal
+    ? t("step") + block.ordinal + " · " + block.title[lang]
+    : block.title[lang];
+  const chapterLink = (page, content, css = "") =>
+    '<a class="' + css + '" href="#' + esc(page.id) + '">' + content + "</a>";
+
+  function chapterNav(activePage) {
+    if (drawnLanguage !== lang) {
+      const openParts = new Set([...directory.querySelectorAll("details[open]")]
+        .map(group => group.dataset.part));
+      directory.innerHTML =
+        '<p class="directory-title">' + t("contents") + "</p>" +
+        handbook.parts.map(part =>
+          '<details class="nav-group" data-part="' + esc(part.id) + '"' +
+          (openParts.has(part.id) ? " open" : "") + '><summary class="group-title">' +
+          '<span class="number">' + esc(part.id.padStart(2, "0")) +
+          "</span><span>" + esc(part.title[lang]) + "</span></summary><ol>" +
+          part.pages.map(id => {
+            const page = pages.get(id);
+            return '<li><a class="nav-link" href="#' + esc(id) + '">' +
+              '<span class="number">' + esc(id) + "</span><span>" + esc(page.title[lang]) +
+              "</span></a></li>";
+          }).join("") + "</ol></details>"
+        ).join("");
+    }
+
+    directory.querySelector('[aria-current="page"]')?.removeAttribute("aria-current");
+    directory.querySelector("[data-current]")?.removeAttribute("data-current");
+    const link = directory.querySelector('a[href="#' + activePage.id + '"]');
+    const group = link.closest("details");
+    link.setAttribute("aria-current", "page");
+    group.dataset.current = "true";
+    if (drawnPage !== activePage.id) group.open = true;
+  }
+
+  function alertFor(block) {
+    return block.review
+      ? '<p class="callout"><strong>' + t("check") + "</strong> " + esc(block.review[lang]) + "</p>"
+      : "";
+  }
+
+  function blockHTML(block) {
+    const title = esc(block.title[lang]);
+    const full = block.body[lang];
+    if (block.kind === "intro") {
+      return full.trim() ? '<div class="content-block intro prose">' + full + "</div>" : "";
+    }
+
+    const ordinal = block.ordinal
+      ? '<span class="step-number" aria-label="' + t("step") + esc(block.ordinal) + '">' +
+        esc(block.ordinal.padStart(2, "0")) + "</span>"
+      : "";
+    let action = "";
+    let body = '<div class="prose">' + full + "</div>";
+    if (block.operation) {
+      const verbs = { "1-5/real-time-query": "viewStatuses", "2-2/failure-reasons": "viewReasons" };
+      const verb = t(verbs[block.id] || "view");
+      const system = operationName(block);
+      action = '<button class="operation" type="button" data-operation="' + esc(block.id) +
+        '" aria-haspopup="dialog" aria-label="' + esc(verb + " · " + block.title[lang]) +
+        '"><span>' + esc(system) + "</span><span>" + esc(verb) +
+        '</span><span class="arrow" aria-hidden="true">↗</span></button>';
+      body = '<p class="step-summary">' + esc(block.summary[lang]) + '</p>' +
+        '<div class="prose print-detail">' + full + "</div>";
+      if (block.keyCheck[lang]) {
+        body += '<div class="prose key-check"><strong>' + t("keyCheck") +
+          "</strong>" + block.keyCheck[lang] + "</div>";
+      }
+    }
+    const heading = block.kind === "subtopic" ? "h3" : "h2";
+    return '<section id="' + esc(block.id) + '" class="content-block ' + block.kind +
+      '" tabindex="-1">' + ordinal + '<div class="block-content"><div class="block-head"><' + heading + '>' +
+      title + "</" + heading + ">" + action + "</div>" + body + alertFor(block) + "</div></section>";
+  }
+
+  function presentPage(page) {
+    chapterNav(page);
+    const index = handbook.pages.indexOf(page);
+    const adjacent = [handbook.pages[index - 1], handbook.pages[index + 1]];
+    const previous = adjacent[0] ? chapterLink(adjacent[0], "← " + esc(adjacent[0].title[lang])) : "";
+    const next = adjacent[1] ? chapterLink(adjacent[1], esc(adjacent[1].title[lang]) + " →") : "";
+    article.innerHTML =
+      '<p class="breadcrumb"><span>' + esc(parts.get(page.part).title[lang]) +
+      '</span><span aria-hidden="true">/</span><span>' + esc(page.id) + "</span></p>" +
+      page.blocks.map(blockHTML).join("") +
+      '<nav class="pager" aria-label="' + t("contents") + '">' + previous + next + "</nav>";
+    const heading = document.createElement("h1");
+    heading.id = "chapter-title";
+    heading.tabIndex = -1;
+    heading.textContent = page.title[lang];
+    article.querySelector(".breadcrumb").after(heading);
+    article.querySelectorAll(".table-scroll").forEach(el => el.setAttribute("aria-label", t("table")));
+
+    const articleBlocks = page.blocks.filter(block => block.kind !== "intro");
+    byId("page-rail").hidden = articleBlocks.length === 0;
+    byId("page-links").innerHTML =
+      '<p class="toc-title">' + t("onPage") + "</p><ol>" +
+      articleBlocks.map(block =>
+        '<li><a class="toc-link' + (block.kind === "subtopic" ? ' toc-subtopic' : '') +
+        '" href="#' + esc(block.id) + '">' + esc(labelFor(block)) + "</a></li>"
+      ).join("") + "</ol>";
+  }
+
+  function positionPage({ focus = true, reposition = true } = {}) {
+    const requested = location.hash.slice(1);
+    const route = requested === "3-1/step-6" ? "3-1/step-5" : requested;
+    const page = pages.get(route.split("/")[0]);
+    byId("cover").hidden = Boolean(page);
+    byId("manual").hidden = !page;
+    document.body.dataset.view = page ? "manual" : "cover";
+    if (!page) {
+      document.title = "GFS OPS · " + t("brand");
+      if (reposition) window.scrollTo(0, 0);
+      if (focus) byId("content").focus({preventScroll: true});
+      return;
+    }
+    if (drawnPage !== page.id || drawnLanguage !== lang) {
+      presentPage(page);
+      drawnPage = page.id;
+      drawnLanguage = lang;
+    }
+    document.title = page.title[lang] + " · GFS OPS";
+    const section = route.includes("/") ? byId(route) : null;
+    article.querySelectorAll("[data-selected]").forEach(el => el.removeAttribute("data-selected"));
+    byId("page-links").querySelectorAll(".toc-link").forEach(link => {
+      if (section && link.getAttribute("href") === "#" + route) {
+        link.setAttribute("aria-current", "location");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+    if (section) section.dataset.selected = "true";
+    if (reposition) {
+      if (section) section.scrollIntoView({ block: "start" });
+      else window.scrollTo(0, 0);
+    }
+    if (focus) (section || byId("chapter-title")).focus({ preventScroll: true });
+  }
+
+  function go(route) {
+    if (location.hash !== "#" + route) history.pushState(null, "", "#" + route);
+    positionPage();
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.querySelectorAll("[data-label]").forEach(el => { el.textContent = t(el.dataset.label); });
+    document.querySelectorAll("[data-language]").forEach(button =>
+      button.setAttribute("aria-pressed", String(button.dataset.language === lang)));
+    document.querySelector(".wordmark").setAttribute("aria-label", t("home"));
+    document.querySelector(".languages").setAttribute("aria-label", t("language"));
+    directory.setAttribute("aria-label", t("contents"));
+    byId("page-links").setAttribute("aria-label", t("onPage"));
+    query.placeholder = t("placeholder");
+    query.setAttribute("aria-label", t("search"));
+    document.querySelector('[data-close="search"]').setAttribute("aria-label", t("closeSearch"));
+    document.querySelector('[data-close="sheet"]').setAttribute("aria-label", t("closeSheet"));
+    positionPage({ focus: false, reposition: false });
+  }
+
+  function showSheet(button) {
+    const page = pages.get(button.dataset.operation.split("/")[0]);
+    const block = page.blocks.find(item => item.id === button.dataset.operation);
+    sheetOrigin = button;
+    sheet.dataset.operation = block.id;
+    byId("sheet-path").textContent = pathFor(page) + " / " + operationName(block);
+    const sheetTitle = byId("sheet-title");
+    sheetTitle.textContent = labelFor(block);
+    sheetTitle.tabIndex = -1;
+    const following = page.blocks[page.blocks.indexOf(block) + 1];
+    const next = block.kind === "step" && following?.kind === "step" ? following : null;
+    const nextLink = next
+      ? '<a class="sheet-next" href="#' + esc(next.id) + '"><span>' + t("next") +
+        '</span><strong>' + esc(next.title[lang]) + ' →</strong></a>'
+      : "";
+    byId("sheet-body").innerHTML = block.body[lang] + alertFor(block) + nextLink;
+    byId("sheet-body").querySelectorAll(".table-scroll").forEach(el =>
+      el.setAttribute("aria-label", t("table")));
+    sheet.showModal();
+    sheet.querySelector(".sheet-content").scrollTop = 0;
+    sheetTitle.focus({ preventScroll: true });
+  }
+
+  function normalize(value) {
+    return value.normalize("NFKD").toLowerCase().replace(/\p{M}/gu, "")
+      .replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+  }
+
+  function oneEdit(first, second) {
+    if (first.length < 5 || Math.abs(first.length - second.length) > 1) return false;
+    let left = 0;
+    while (left < first.length && first[left] === second[left]) left++;
+    if (first.length !== second.length) {
+      return first.length > second.length
+        ? first.slice(left + 1) === second.slice(left)
+        : second.slice(left + 1) === first.slice(left);
+    }
+    const sameSuffix = first.slice(left + 1) === second.slice(left + 1);
+    const transposed = first[left] === second[left + 1] && first[left + 1] === second[left] &&
+      first.slice(left + 2) === second.slice(left + 2);
+    return sameSuffix || transposed;
+  }
+
+  const searchable = handbook.pages.flatMap(page => page.blocks.map(block => {
+    const titles = [block.title.en, block.title.zh, block.id].map(normalize);
+    const aliases = block.aliases.map(normalize);
+    const body = normalize(block.plain.en + " " + block.plain.zh);
+    const terms = new Set([...titles, ...aliases, body].join(" ").split(" "));
+    const codes = [...block.body.en.matchAll(/<code>([^<]+)<\/code>/g)]
+      .map(match => normalize(match[1]));
+    return { page, block, titles, aliases, body, terms, codes };
+  }));
+  const suggestions = ["2-1/step-5", "2-2/failure-reasons", "3-1/step-5", "4-2/financial"];
+  const suggestedResults = suggestions.map(id => searchable.find(item => item.block.id === id)).filter(Boolean);
+
+  function relevance(item, phrase) {
+    if (item.titles.includes(phrase)) return 140;
+    if (item.codes.includes(phrase) && (phrase.includes(" ") || /^[a-z0-9]{2,}$/.test(phrase))) return 122;
+    if (item.aliases.includes(phrase)) return 117;
+    if (item.titles.some(title => title.includes(phrase))) return 95;
+    if (item.aliases.some(alias => alias.includes(phrase))) return 85;
+    if (item.body.includes(phrase)) return 72;
+
+    const tokens = phrase.split(" ");
+    if (tokens.length === 1 && tokens[0].length < 5) return 0;
+    let exact = 0;
+    for (const token of tokens) {
+      if (item.terms.has(token)) {
+        exact++;
+      } else if (token.length >= 5 && [...item.terms].some(term => oneEdit(token, term))) {
+        continue;
+      } else {
+        return 0;
+      }
+    }
+    if (tokens.length === 1 && item.aliases.some(alias => oneEdit(phrase, alias))) return 65;
+    const fuzzyTitle = tokens.length === 1 &&
+      [...item.titles, ...item.aliases].some(title => title.split(" ").some(term => oneEdit(phrase, term)));
+    return fuzzyTitle ? 55 : 35 + exact;
+  }
+
+  function excerptFor(item, raw) {
+    const text = item.block.plain[lang] || item.block.summary[lang] || "";
+    const queryText = raw.trim();
+    const hit = queryText ? text.toLowerCase().indexOf(queryText.toLowerCase()) : -1;
+    if (!text) return "";
+    if (hit < 0) return esc(text.length > 115 ? text.slice(0, 112) + "…" : text);
+    const start = Math.max(0, hit - 29);
+    const end = Math.min(text.length, hit + queryText.length + 73);
+    return (start ? "…" : "") + esc(text.slice(start, hit)) + "<mark>" +
+      esc(text.slice(hit, hit + queryText.length)) + "</mark>" +
+      esc(text.slice(hit + queryText.length, end)) + (end < text.length ? "…" : "");
+  }
+
+  function pickResult(index, moveFocus) {
+    if (!currentResults.length) return;
+    selectedResult = Math.min(Math.max(index, 0), currentResults.length - 1);
+    const links = Array.from(results.querySelectorAll(".result"));
+    links.forEach((link, position) => {
+      link.dataset.active = String(position === selectedResult);
+    });
+    if (moveFocus) {
+      links[selectedResult].focus({ preventScroll: true });
+      links[selectedResult].scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  function updateResults() {
+    const phrase = normalize(query.value);
+    const ranked = phrase ? searchable.map(item => ({ item, score: relevance(item, phrase) }))
+      .filter(hit => hit.score > 0).sort((a, b) => b.score - a.score) : [];
+    currentResults = phrase ? ranked.map(hit => hit.item) : suggestedResults;
+    const count = ranked.length;
+    byId("result-status").textContent = phrase
+      ? (count === 1 ? t("oneMatch") : count + " " + t("match"))
+      : t("suggested");
+    results.innerHTML = currentResults.length
+      ? currentResults.map((item, i) => {
+        const chapter = pathFor(item.page) + (item.block.kind === "intro" ? "" : " / " + item.page.title[lang]);
+        const excerpt = excerptFor(item, query.value);
+        return '<a class="result" data-result="' + i + '" href="#' + esc(item.block.id) + '">' +
+          '<span class="result-path">' + esc(chapter) + '</span><span class="result-title">' +
+          esc(labelFor(item.block)) + "</span>" +
+          (excerpt ? '<span class="result-excerpt">' + excerpt + "</span>" : "") + "</a>";
+      }).join("")
+      : '<p class="empty">' + t("noMatch") + "</p>";
+    results.scrollTop = 0;
+    pickResult(0, false);
+  }
+
+  function showSearch() {
+    if (sheet.open) return;
+    if (!search.open) {
+      searchOrigin = document.activeElement;
+      search.showModal();
+    }
+    updateResults();
+    query.focus();
+    query.select();
+  }
+
+  function followSearch(item) {
+    if (!item) return;
+    skipRestore = true;
+    search.close();
+    go(item.block.id);
+  }
+
+  searchTrigger.addEventListener("click", showSearch);
+  query.addEventListener("input", updateResults);
+  search.addEventListener("close", () => {
+    if (!skipRestore) (searchOrigin?.isConnected ? searchOrigin : searchTrigger).focus({preventScroll: true});
+    skipRestore = false;
+  });
+  sheet.addEventListener("close", () => {
+    if (sheetOrigin?.isConnected) sheetOrigin.focus({ preventScroll: true });
+  });
+  for (const dialog of [search, sheet]) {
+    dialog.addEventListener("click", event => {
+      if (event.target !== dialog) return;
+      const bounds = dialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right ||
+          event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+    });
+  }
+  search.addEventListener("keydown", event => {
+    if (event.isComposing) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      search.close();
+      return;
+    }
+    if (!currentResults.length) return;
+    const result = event.target.closest("[data-result]");
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const index = result ? Number(result.dataset.result) : -1;
+      if (event.key === "ArrowUp" && index <= 0) {
+        query.focus();
+        pickResult(0, false);
+      } else {
+        pickResult(index + (event.key === "ArrowDown" ? 1 : -1), true);
+      }
+    } else if (event.key === "Enter" && event.target === query) {
+      event.preventDefault();
+      followSearch(currentResults[selectedResult]);
+    }
+  });
+  document.addEventListener("keydown", event => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && !sheet.open) {
+      event.preventDefault();
+      showSearch();
+    }
+  });
+  document.addEventListener("click", event => {
+    const control = event.target.closest("a, button");
+    if (!control) return;
+    const { language, operation, close, result } = control.dataset;
+    if (language && lang !== language) {
+      lang = language;
+      try { localStorage.setItem("gfs-ops-language", lang); } catch { /* Optional preference. */ }
+      applyLanguage();
+    } else if (operation) {
+      showSheet(control);
+    } else if (close) {
+      (close === "sheet" ? sheet : search).close();
+    } else if (result !== undefined && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+      event.preventDefault();
+      followSearch(currentResults[Number(result)]);
+    } else if (control.id === "skip") {
+      event.preventDefault();
+      (byId("chapter-title")?.closest("[hidden]") ? byId("content") :
+        byId("chapter-title") || byId("content")).focus();
+    } else {
+      const href = control.getAttribute("href");
+      if (href?.startsWith("#") && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        if (sheet.open) {
+          sheetOrigin = null;
+          sheet.close();
+        }
+        go(href.slice(1));
+      }
+    }
+  });
+  window.addEventListener("hashchange", () => positionPage());
+  byId("search-key").textContent = /mac/i.test(navigator.platform) ? "⌘ K" : "Ctrl K";
+  applyLanguage();
+  positionPage({ focus: false });
+})();
+</script>
+</body>
+</html>
